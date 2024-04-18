@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Alle Pfade müssen mit {@code /app/} beginnen.
  */
 @Controller
+@RequestMapping("/app")
 public class ThymeleafWebController {
 
     /**
