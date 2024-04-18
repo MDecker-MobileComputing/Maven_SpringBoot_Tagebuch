@@ -20,10 +20,11 @@ public class BasicAuthenticationKonfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.csrf().disable()
+        httpSecurity.csrf( (csrf) -> csrf.disable() )
                     .authorizeHttpRequests()
                     .anyRequest()
-                    .authenticated()
+                    //.requestMatchers("/app")
+                    .authenticated()                    
                     .and()
                     .httpBasic();
 
