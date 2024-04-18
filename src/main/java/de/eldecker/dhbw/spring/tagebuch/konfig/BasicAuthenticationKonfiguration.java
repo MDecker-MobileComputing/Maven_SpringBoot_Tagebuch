@@ -1,22 +1,26 @@
 package de.eldecker.dhbw.spring.tagebuch.konfig;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 
 
+/**
+ * Konfiguration nach https://www.baeldung.com/spring-boot-security-autoconfiguration#config
+ */
 @Configuration
 public class BasicAuthenticationKonfiguration {
 
@@ -25,28 +29,35 @@ public class BasicAuthenticationKonfiguration {
     private static final String ROLLE_NUTZER = "nutzer";
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
-        httpSecurity.csrf( (csrf) -> csrf.disable() ) // https://stackoverflow.com/a/74753955
-                    .authorizeHttpRequests(requests ->
-                        requests.requestMatchers("/app")
-                                .hasRole(ROLLE_NUTZER)
-                                .anyRequest().authenticated() )
-                    .httpBasic();
-
-        return httpSecurity.build();
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        
+        return http.authorizeHttpRequests(request -> request.anyRequest()
+                   .authenticated())
+                   .httpBasic( withDefaults() )
+                   .build();
     }
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
+    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
 
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("alice")
-                .password("g3h3im")
+        UserDetails user1 = User.withUsername("alice")
+                .password(passwordEncoder.encode("g3h3im"))
                 .roles(ROLLE_NUTZER)
-                .build();
+                .build();        
+        
+        UserDetails user2 = User.withUsername("bob")
+                .password(passwordEncoder.encode("s3cr3t"))
+                .roles(ROLLE_NUTZER)
+                .build();         
 
-        return new InMemoryUserDetailsManager(user);
+        return new InMemoryUserDetailsManager(user1, user2);
     }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        
+        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return encoder;
+    }    
 
 }
