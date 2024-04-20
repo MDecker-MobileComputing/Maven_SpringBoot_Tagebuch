@@ -27,21 +27,27 @@ public class BasicAuthenticationKonfiguration {
 
     private static final String ROLLE_NUTZER = "nutzer";
 
+    
+    /**
+     * Authentifizierung konfigurieren.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         
-        return http.authorizeHttpRequests(request -> request.anyRequest()
-                   .authenticated())
+        return http.authorizeHttpRequests(
+                        request -> request.anyRequest().authenticated()
+                    )         
                    .httpBasic( withDefaults() )
                    .build();
     }
+
 
     /**
      * Nutzernamen mit Passwörtern definieren.
      * 
      * @param passwordEncoder Bean für Kodierung Passwörter.
      * 
-     * @return
+     * @return Objekt mit allen Nutzernamen und Passwörtern
      */
     @Bean
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
@@ -68,8 +74,7 @@ public class BasicAuthenticationKonfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         
-        PasswordEncoder encoder = createDelegatingPasswordEncoder();
-        return encoder;
+        return createDelegatingPasswordEncoder();
     }    
 
 }
