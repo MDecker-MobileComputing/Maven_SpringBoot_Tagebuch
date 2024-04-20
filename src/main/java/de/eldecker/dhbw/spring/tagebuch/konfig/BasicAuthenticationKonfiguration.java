@@ -19,9 +19,14 @@ import org.springframework.security.web.SecurityFilterChain;
 
 
 /**
+ * Konfiguration von Web-Security: auf welche Pfade kann der Nutzer nur nach erfolgreicher 
+ * Konfiguration zugreifen?
+ * <br><br> 
+ * 
  * Quellen:
  * <ul>
  * <li>https://docs.spring.io/spring-security/reference/servlet/configuration/java.html#jc-httpsecurity</li>
+ * <li>https://stackoverflow.com/a/73877921/1364368</li>
  * <li>https://www.baeldung.com/spring-boot-security-autoconfiguration#config</li>
  * </ul> 
  */
@@ -39,29 +44,30 @@ public class BasicAuthenticationKonfiguration {
      */
     @Bean
     @Order(1)   
-    public SecurityFilterChain filterChain1(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterKetteFuerBeschraenktePfade(HttpSecurity http) throws Exception {
         
-        return http.securityMatcher("/app/**")                
+        return http.securityMatcher("/app/**")
                    .authorizeHttpRequests(
                         request -> request.anyRequest().authenticated()
-                   )         
+                   )                            
                    //.formLogin( withDefaults() )
                    .httpBasic( withDefaults() )
                    .build();
     }
-
+    
 
     /**
      * Für sonstige Requests (weil {@code Order(2)} wird keine Authentifizierung gefordert. 
      */
     @Bean
     @Order(2)   
-    public SecurityFilterChain filterChain2(HttpSecurity http) throws Exception {
-        
-        return http.authorizeHttpRequests(                   
-                        request -> request.anyRequest().permitAll()
-                   )         
-                   .build();
+    public SecurityFilterChain filterKetteFuerFreiePfade(HttpSecurity http) throws Exception {
+                
+        return http.securityMatcher("/", "/h2-console/**")
+                .authorizeHttpRequests(
+                     request -> request.anyRequest().permitAll()
+                )         
+                .build();        
     }    
 
 
