@@ -24,6 +24,9 @@ public class ThymeleafWebController {
     /**
      * Hauptseite der Anwendung anzeigen: Liste mit Tagebucheinträgen.
      *
+     * @param authentication Objekt, um Name von authentifiziertem Nutzer abzufragen;  
+     *                       siehe auch: https://stackoverflow.com/questions/68595199/
+     *
      * @param model Model, in das die Daten für die Platzhalter in der
      *              Template-Datei geschrieben werden
      *
@@ -31,7 +34,7 @@ public class ThymeleafWebController {
      *         wird in Ordner {@code src/main/resources/templates/} gesucht.
      */
     @GetMapping("/hauptseite")
-    public String kuerzelAufloesen( Authentication authentication, // https://stackoverflow.com/questions/68595199/what-is-the-point-of-authenticationprincipal-annotation
+    public String kuerzelAufloesen( Authentication authentication,
                                     Model model ) {
 
         LOG.info( "Hauptseite aufgerufen von: " + authentication.getName() ); // gibt mit User.withUsername() gesetzten Nutzernamen zurück
