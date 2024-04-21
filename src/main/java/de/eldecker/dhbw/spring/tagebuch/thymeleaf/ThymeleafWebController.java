@@ -1,5 +1,9 @@
 package de.eldecker.dhbw.spring.tagebuch.thymeleaf;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/app")
 public class ThymeleafWebController {
 
+    private Logger LOG = LoggerFactory.getLogger( ThymeleafWebController.class );
+
+
     /**
      * Hauptseite der Anwendung anzeigen: Liste mit Tagebucheinträgen.
      *
@@ -24,7 +31,10 @@ public class ThymeleafWebController {
      *         wird in Ordner {@code src/main/resources/templates/} gesucht.
      */
     @GetMapping("/hauptseite")
-    public String kuerzelAufloesen( Model model ) {
+    public String kuerzelAufloesen( Authentication authentication, // https://stackoverflow.com/questions/68595199/what-is-the-point-of-authenticationprincipal-annotation
+                                    Model model ) {
+
+        LOG.info( "Hauptseite aufgerufen von: " + authentication.getName() ); // gibt mit User.withUsername() gesetzten Nutzernamen zurück
 
         return "hauptseite";
     }

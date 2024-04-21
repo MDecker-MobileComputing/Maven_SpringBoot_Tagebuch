@@ -19,16 +19,16 @@ import org.springframework.security.web.SecurityFilterChain;
 
 
 /**
- * Konfiguration von Web-Security: auf welche Pfade kann der Nutzer nur nach erfolgreicher 
+ * Konfiguration von Web-Security: auf welche Pfade kann der Nutzer nur nach erfolgreicher
  * Konfiguration zugreifen?
- * <br><br> 
- * 
+ * <br><br>
+ *
  * Quellen:
  * <ul>
  * <li>https://docs.spring.io/spring-security/reference/servlet/configuration/java.html#jc-httpsecurity</li>
  * <li>https://stackoverflow.com/a/73877921/1364368</li>
  * <li>https://www.baeldung.com/spring-boot-security-autoconfiguration#config</li>
- * </ul> 
+ * </ul>
  */
 @Configuration
 @EnableWebSecurity
@@ -38,72 +38,72 @@ public class BasicAuthenticationKonfiguration {
 
     private static final String ROLLE_NUTZER = "nutzer";
 
-    
+
     /**
-     * Für Requests, deren Pfad mit {@code /app/} beginnt, wird Basic Authentication gefordert. 
+     * Für Requests, deren Pfad mit {@code /app/} beginnt, wird Basic Authentication gefordert.
      */
     @Bean
-    @Order(1)   
+    @Order(1)
     public SecurityFilterChain filterKetteFuerBeschraenktePfade(HttpSecurity http) throws Exception {
-        
+
         return http.securityMatcher("/app/**")
                    .authorizeHttpRequests(
                         request -> request.anyRequest().authenticated()
-                   )                            
+                   )
                    //.formLogin( withDefaults() )
                    .httpBasic( withDefaults() )
                    .build();
     }
-    
+
 
     /**
-     * Für sonstige Requests (weil {@code Order(2)} wird keine Authentifizierung gefordert. 
+     * Für sonstige Requests (weil {@code Order(2)} wird keine Authentifizierung gefordert.
      */
     @Bean
-    @Order(2)   
+    @Order(2)
     public SecurityFilterChain filterKetteFuerFreiePfade(HttpSecurity http) throws Exception {
-                
+
         return http.securityMatcher("/", "/h2-console/**")
                 .authorizeHttpRequests(
                      request -> request.anyRequest().permitAll()
-                )         
-                .build();        
-    }    
+                )
+                .build();
+    }
 
 
     /**
      * Nutzernamen mit Passwörtern definieren.
-     * 
+     *
      * @param passwordEncoder Bean für Kodierung Passwörter.
-     * 
+     *
      * @return Objekt mit allen Nutzernamen und Passwörtern
      */
     @Bean
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
 
         UserDetails user1 = User.withUsername("alice")
-                                .password(passwordEncoder.encode("g3h3im"))
+                                .password(passwordEncoder.encode("g3h3im")) // BCrypt?
                                 .roles(ROLLE_NUTZER)
-                                .build();        
-        
+                                .build();
+
         UserDetails user2 = User.withUsername("bob")
                                 .password(passwordEncoder.encode("s3cr3t"))
                                 .roles(ROLLE_NUTZER)
-                                .build();         
+                                .build();
 
         return new InMemoryUserDetailsManager(user1, user2);
     }
-    
-    
+
+
     /**
      * Bean für Passwort-Kodierung erzeugen.
-     * 
+     *
      * @return Bean für Passwort-Kodierung
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        
+
         return createDelegatingPasswordEncoder();
-    }    
+    }
 
 }
