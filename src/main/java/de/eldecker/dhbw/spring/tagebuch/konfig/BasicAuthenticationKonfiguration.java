@@ -93,7 +93,7 @@ public class BasicAuthenticationKonfiguration {
 
 
     /**
-     * Nutzernamen mit Passwörtern definieren.
+     * Nutzernamen mit Passwörtern definieren (werden aus Datenbank geladen).
      *
      * @param passwordEncoder Bean für Kodierung Passwörter.
      *
@@ -115,9 +115,7 @@ public class BasicAuthenticationKonfiguration {
         */                                
 
         List<Nutzer> nutzerListe = _datenbank.getAlleNutzer();
-        
-        
-
+                
         List<UserDetails> userDetailsList = nutzerListe.stream()
                 .map(nutzer -> {
                     
