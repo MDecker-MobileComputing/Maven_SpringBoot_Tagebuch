@@ -93,14 +93,17 @@ public class Datenbank {
      *
      * @return Liste mit allen Tagenbucheinträgen für {@code nutzername};
      *         kann leer sein, aber nicht {@code null}; nach absteigendem
-     *         Datum sortiert.
+     *         Datum sortiert. Der Text in einem Tagebucheintrag wird bei
+     *         Bedarf gekürzt und dann mit "..." am Ende versehen.
+     *         Die Datumswerte sind wie im folgenden Beispiel formatiert:
+     *         {@code 24.04.2024 (Do.)}  
      */
     public List<TagebuchEintrag> getAlleTagebuchEintraege(String nutzername) {
 
         final String preparedStatement = 
                 """
                     SELECT t.id, 
-                           t.datum,
+                           FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
                            CASE 
                                WHEN CHAR_LENGTH(eintrag) > 99 THEN CONCAT(SUBSTRING(eintrag, 1, 99), '...')
                                ELSE eintrag 
