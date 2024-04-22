@@ -97,14 +97,19 @@ public class Datenbank {
      */
     public List<TagebuchEintrag> getAlleTagebuchEintraege(String nutzername) {
 
-
-        final String preparedStatement = """
-                                            SELECT t.id, t.eintrag, t.datum
-                                              FROM tagebucheintrag t, nutzer n
-                                             WHERE t.nutzer_id = n.id
-                                               AND n.nutzername = ?
-                                             ORDER BY t.datum DESC                                                                                                                                                                                                                     
-                                         """;                                         
+        final String preparedStatement = 
+                """
+                    SELECT t.id, 
+                           t.datum,
+                           CASE 
+                               WHEN CHAR_LENGTH(eintrag) > 99 THEN CONCAT(SUBSTRING(eintrag, 1, 99), '...')
+                               ELSE eintrag 
+                           END AS eintrag                                       
+                    FROM tagebucheintrag t, nutzer n
+                    WHERE t.nutzer_id = n.id
+                    AND n.nutzername = ?
+                    ORDER BY t.datum DESC                                                                                                                                                                                                            
+                 """;                                         
         try {
 
             List<TagebuchEintrag> ergebnisListe =

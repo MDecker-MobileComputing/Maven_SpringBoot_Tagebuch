@@ -1,7 +1,5 @@
 package de.eldecker.dhbw.spring.tagebuch.thymeleaf;
 
-import static java.util.Collections.emptyList;
-
 import java.util.List;
 
 import org.slf4j.Logger;
