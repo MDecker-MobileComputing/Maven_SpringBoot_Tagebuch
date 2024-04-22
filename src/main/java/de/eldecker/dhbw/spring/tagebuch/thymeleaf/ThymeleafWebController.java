@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ThymeleafWebController {
 
     private Logger LOG = LoggerFactory.getLogger( ThymeleafWebController.class );
+    
+    private static final String ATTRIBUT_NAME_NUTZERNAME = "nutzername";
 
 
     /**
@@ -37,8 +39,10 @@ public class ThymeleafWebController {
     public String kuerzelAufloesen( Authentication authentication,
                                     Model model ) {
 
-        LOG.info( "Hauptseite aufgerufen von: " + authentication.getName() ); // gibt mit User.withUsername() gesetzten Nutzernamen zurück
-
+        final String nutzername = authentication.getName();
+        model.addAttribute(ATTRIBUT_NAME_NUTZERNAME, nutzername );
+        LOG.info( "Hauptseite aufgerufen von: {}"  , nutzername );        
+        
         return "hauptseite";
     }
 
