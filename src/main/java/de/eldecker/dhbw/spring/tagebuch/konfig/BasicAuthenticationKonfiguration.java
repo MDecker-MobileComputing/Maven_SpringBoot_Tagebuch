@@ -122,7 +122,7 @@ public class BasicAuthenticationKonfiguration {
                     final String nutzername        = nutzer.nutzername();
                     final String passwortEncoded   = passwordEncoder.encode( nutzer.passwort() );
                     
-                    LOG.info("Password kodiert: " + passwortEncoded);
+                    //LOG.info("Password kodiert: " + passwortEncoded);
                     
                     UserDetails userDetails = User.withUsername(nutzername)
                                                   .password(passwortEncoded)

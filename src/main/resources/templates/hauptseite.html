@@ -8,6 +8,13 @@
     <link rel="stylesheet" type="text/css" href="../styles.css">
 </head>
 <body>
+
   <h1>Tagebuch von <span th:text="${nutzername}"></span></h1>
+
+  <div th:each="eintrag : ${tagebucheintrage}">
+    <p th:text="${eintrag.datum}"></p>
+    <p th:text="${eintrag.text}"></p>
+  </div>
+
 </body>
 </html>
