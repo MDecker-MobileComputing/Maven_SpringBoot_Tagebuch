@@ -13,6 +13,10 @@ MERGE INTO nutzer (id, nutzername, passwort)
     KEY(nutzername)
     VALUES ( 2, 'bob', 's3cr3t' );
 
+MERGE INTO nutzer (id, nutzername, passwort)
+    KEY(nutzername)
+    VALUES ( 3, 'claire', 't3st' );
+
 
 -- Daten für die Tabelle "tagebucheintrag" einfügen
 
@@ -27,3 +31,7 @@ MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
     VALUES ( 2, '2024-01-01', 'Erster Eintrag von Bob' );
+
+MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
+    KEY(nutzer_id, datum)
+    VALUES ( 2, '2024-03-15', 'Heute habe ich verschlafen' );

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+  <html xmlns:th="http://www.thymeleaf.org"></html>
+<head>
+    <title>Tagebucheintrag für den <span th:text="${eintrag_datum}"></span></title>
+    <meta charset="utf-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../../styles.css">
+</head>
+<body>
+
+  <h1>Tagebucheintrag für den <span th:text="${eintrag_datum}"></span></h1>
+
+  <p class="fett" th:if="${meldung != null}">
+     <span th:text="${meldung}"></span>
+  </p>
+
+  <p class="kursiv" th:text="${eintrag_text}"></p>
+
+  <br>
+
+  <a href="../hauptseite">Zurück zur Hauptseite</a>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 package de.eldecker.dhbw.spring.tagebuch.thymeleaf;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
@@ -25,9 +27,36 @@ public class ThymeleafWebController {
 
     private Logger LOG = LoggerFactory.getLogger( ThymeleafWebController.class );
             
+    /** 
+     * Name (ohne Datei-Endung) für Template "hauptseite" (Liste aller Einträge für einen Nutzer), 
+     * wird im Ordner {@code src/main/resources/templates/} gesucht. 
+     * 
+     */
+    private static final String TEMPLATE_HAUPTSEITE = "hauptseite";
+
+    /** 
+     * Name (ohne Datei-Endung) für Template "eintrag" (Anzeige einzelner Tagebucheintrag), wird  
+     * im Ordner {@code src/main/resources/templates/} gesucht.
+     */    
+    private static final String TEMPLATE_EINTRAG = "eintrag";
+    
+    /** Key für String-Attribut im Template "hauptseite". */
     private static final String ATTRIBUT_NAME_NUTZERNAME = "nutzername";
     
+    /** Key für List-Attribut im Template "hauptseite". */ 
     private static final String ATTRIBUT_LISTE_TAGEBUCHEINTRAEGE = "tagebucheintrage";
+    
+    /** Key für String-Attribut mit formatiertem Datums des Tagebucheintrags im Template "eintrag". */
+    private static final String ATTRIBUT_EINTRAG_DATUM = "eintrag_datum";
+    
+    /** Key für String-Attribut mit eigentlichem Inhalt des Tagebucheintrags im Template "eintrag". */
+    private static final String ATTRIBUT_EINTRAG_TEXT = "eintrag_text";
+    
+    /** 
+     * Key für String-Attribut mit dem Nutzer anzuzeigenden Text (Warnung, Fehler, ...),
+     * wird von allen Templates verwendet. 
+     */
+    private static final String ATTRIBUT_MELDUNG = "meldung";
     
     /**
      * Repository-Bean für Zugriff auf Datenbank.
@@ -50,15 +79,15 @@ public class ThymeleafWebController {
      * @param authentication Objekt, um Name von authentifiziertem Nutzer abzufragen;  
      *                       siehe auch: https://stackoverflow.com/questions/68595199/
      *
-     * @param model Model, in das die Daten für die Platzhalter in der
-     *              Template-Datei geschrieben werden
+     * @param model Objekt, in das die Werte für die Platzhalter in der Template-Datei
+     *              geschrieben werden.
      *
      * @return Name der Template-Datei, die angezeigt werden soll;
      *         wird in Ordner {@code src/main/resources/templates/} gesucht.
      */
     @GetMapping("/hauptseite")
-    public String kuerzelAufloesen( Authentication authentication,
-                                    Model model ) {
+    public String hauptseiteAnzeige( Authentication authentication,
+                                     Model model ) {
 
         final String nutzername = authentication.getName();
         model.addAttribute(ATTRIBUT_NAME_NUTZERNAME, nutzername );
@@ -67,7 +96,59 @@ public class ThymeleafWebController {
         List<TagebuchEintrag> eintrage = _datenbank.getAlleTagebuchEintraege(nutzername);
         model.addAttribute( ATTRIBUT_LISTE_TAGEBUCHEINTRAEGE, eintrage );
         
-        return "hauptseite";
+        if ( eintrage.isEmpty() ) {
+            
+            model.addAttribute( ATTRIBUT_MELDUNG, "Keine Tagebucheinträge vorhanden");
+        }
+        
+        return TEMPLATE_HAUPTSEITE;
+    }
+    
+
+    /**
+     * Einzelnen Tagebucheintrag anzeigen.
+     * 
+     * @param authentication Objekt, um Name von authentifiziertem Nutzer abzufragen;  
+     *                       siehe auch: https://stackoverflow.com/questions/68595199/
+     *
+     * @param model Objekt, in das die Werte für die Platzhalter in der Template-Datei
+     *              geschrieben werden.
+     *              
+     * @param datum Datum im Format {@code YYYY-MM-DD}
+     *
+     * @return Name der Template-Datei, die angezeigt werden soll;
+     *         wird in Ordner {@code src/main/resources/templates/} gesucht.
+     */
+    @GetMapping("/eintrag/{datum}")
+    public String eintragAnzeigen( Authentication authentication,
+                                   Model model,
+                                   @PathVariable("datum") String datum ) {
+
+        final String nutzername = authentication.getName();
+        
+        Optional<TagebuchEintrag> eintragOptional = 
+                                        _datenbank.getTagebuchEintrag( nutzername, 
+                                                                       datum );        
+        if ( eintragOptional.isPresent() ) {
+            
+            final TagebuchEintrag eintrag = eintragOptional.get();
+            
+            model.addAttribute( ATTRIBUT_EINTRAG_DATUM, eintrag.datum() );
+            model.addAttribute( ATTRIBUT_EINTRAG_TEXT , eintrag.text()  );
+            
+            LOG.info("Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\" wird angezeigt.",
+                      nutzername, datum );            
+        } else {
+                        
+            model.addAttribute( ATTRIBUT_MELDUNG, "Keinen Tagebucheintrag für diesen Tag gefunden.");
+            
+            model.addAttribute( ATTRIBUT_EINTRAG_DATUM, datum );
+            model.addAttribute( ATTRIBUT_EINTRAG_TEXT , ""    );
+            
+            LOG.warn("Angeforderter Tagebucheintrag wurde nicht gefunden.");
+        }
+        
+        return TEMPLATE_EINTRAG;
     }
 
 }

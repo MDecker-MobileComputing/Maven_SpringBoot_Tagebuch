@@ -11,10 +11,14 @@
 
   <h1>Tagebuch von <span th:text="${nutzername}"></span></h1>
 
+  <p class="fett" th:if="${meldung != null}">
+    <span th:text="${meldung}"></span>
+  </p>
+
   <div th:each="eintrag : ${tagebucheintrage}">
     <p>
        <span th:text="${eintrag.datum}"></span>:
-       <span th:text="${eintrag.text}"></span>
+       <span th:text="${eintrag.text}" ></span>
     </p>
   </div>
 
