@@ -93,10 +93,10 @@ public class ThymeleafWebController {
         model.addAttribute(ATTRIBUT_NAME_NUTZERNAME, nutzername );
         LOG.info( "Hauptseite aufgerufen von: {}"  , nutzername );        
         
-        List<TagebuchEintrag> eintrage = _datenbank.getAlleTagebuchEintraege(nutzername);
-        model.addAttribute( ATTRIBUT_LISTE_TAGEBUCHEINTRAEGE, eintrage );
+        List<TagebuchEintrag> eintrageListe = _datenbank.getAlleTagebuchEintraege(nutzername);
+        model.addAttribute( ATTRIBUT_LISTE_TAGEBUCHEINTRAEGE, eintrageListe );
         
-        if ( eintrage.isEmpty() ) {
+        if ( eintrageListe.isEmpty() ) {
             
             model.addAttribute( ATTRIBUT_MELDUNG, "Keine Tagebucheinträge vorhanden");
         }
