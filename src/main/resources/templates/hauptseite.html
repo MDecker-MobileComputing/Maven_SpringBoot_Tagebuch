@@ -15,6 +15,11 @@
     <span th:text="${meldung}"></span>
   </p>
 
+  <p th:if="${tagebucheintrage.size() > 0}">
+    Anzahl Tagebucheinträge: <span th:text="${tagebucheintrage.size()}"></span>
+  </p>
+  <br>
+
   <div th:each="eintrag : ${tagebucheintrage}">
     <p>
        <span th:text="${eintrag.datum}"></span>:
