@@ -22,6 +22,8 @@ import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 
 /**
  * Diese Repository-Bean enthält Methoden für Zugriff auf die Datenbank.
+ * Es werden dafür die Spring-Klassen {@code JdbcTemplate} und
+ * {@code NamedParameterJdbcTemplate} verwendet.
  */
 @Repository
 public class Datenbank {
@@ -62,7 +64,7 @@ public class Datenbank {
 
 
     /**
-     * Konstruktor für Dependency Injection und Erzeugung der
+     * Konstruktor für <i>Dependency Injection</i> und Erzeugung der
      * {@code DataClassRowMapper}-Instanz.
      */
     @Autowired
@@ -171,8 +173,10 @@ public class Datenbank {
      * @param datum Datum im Format {@code YYYY-MM-DD}
      *
      * @return Optional enthält den gewünschten Tagebucheintrag für {@code nutzername}
-     *         und {@code datum} oder ist leer; wenn Tagebucheintrag gefunden wurde,
-     *         dann ist das Attribut {@code link} leer.
+     *         und {@code datum} oder ist leer; wenn der Tagebucheintrag gefunden wurde,
+     *         dann enthält das Attribut {@code link} einen leeren String (weil der Link
+     *         zur Detailansicht des Eintrags nicht benötigt wird, der Nutzer hat die
+    *          Detailansicht ja bereits aufgerufen).
      */
     public Optional<TagebuchEintrag> getTagebuchEintrag(String nutzername, String datum) {
 
