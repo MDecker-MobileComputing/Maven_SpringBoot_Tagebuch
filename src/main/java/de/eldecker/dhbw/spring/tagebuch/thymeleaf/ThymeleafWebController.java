@@ -40,7 +40,7 @@ public class ThymeleafWebController {
      */    
     private static final String TEMPLATE_EINTRAG = "eintrag";
     
-    /** Key für String-Attribut im Template "hauptseite". */
+    /** Key für String-Attribut mit Nutzername. */
     private static final String ATTRIBUT_NAME_NUTZERNAME = "nutzername";
     
     /** Key für List-Attribut im Template "hauptseite". */ 
@@ -125,6 +125,7 @@ public class ThymeleafWebController {
                                    @PathVariable("datum") String datum ) {
 
         final String nutzername = authentication.getName();
+        model.addAttribute( ATTRIBUT_NAME_NUTZERNAME, nutzername );
         
         Optional<TagebuchEintrag> eintragOptional = 
                                         _datenbank.getTagebuchEintrag( nutzername, 
@@ -140,7 +141,7 @@ public class ThymeleafWebController {
                       nutzername, datum );            
         } else {
                         
-            model.addAttribute( ATTRIBUT_MELDUNG, "Keinen Tagebucheintrag für diesen Tag gefunden.");
+            model.addAttribute( ATTRIBUT_MELDUNG, "Keinen Tagebucheintrag für diesen Tag gefunden." );
             
             model.addAttribute( ATTRIBUT_EINTRAG_DATUM, datum );
             model.addAttribute( ATTRIBUT_EINTRAG_TEXT , ""    );

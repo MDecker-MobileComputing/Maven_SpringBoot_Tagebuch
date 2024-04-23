@@ -24,6 +24,7 @@
     <p>
        <span th:text="${eintrag.datum}"></span>:
        <span th:text="${eintrag.text}" ></span>
+      (<a th:href="@{${eintrag.link}}">Öffnen</a>)
     </p>
   </div>
 

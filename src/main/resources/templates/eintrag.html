@@ -9,7 +9,12 @@
 </head>
 <body>
 
-  <h1>Tagebucheintrag für den <span th:text="${eintrag_datum}"></span></h1>
+  <h1>
+    Tagebucheintrag von
+    <span th:text="${nutzername}"></span>
+      für den
+    <span th:text="${eintrag_datum}"></span>
+  </h1>
 
   <p class="fett" th:if="${meldung != null}">
      <span th:text="${meldung}"></span>

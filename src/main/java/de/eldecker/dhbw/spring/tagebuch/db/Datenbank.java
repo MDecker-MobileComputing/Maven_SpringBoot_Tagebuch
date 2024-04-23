@@ -46,7 +46,7 @@ public class Datenbank {
      * vom Typ {@link Nutzer} abzubilden.
      */
     private final NutzerRowMapper _nutzerRowMapper;
-    
+
     /**
      * Objekt, das automatisch eine Ergebniszeile der DB-Anfrage auf ein
      * Objekt der Record-Klasse {@link TagebuchEintrag} abbildet.
@@ -54,15 +54,15 @@ public class Datenbank {
      * ACHTUNG: die Ergebniszeile muss für jedes Attribut der
      * Record-Klasse eine gleichnamige Spalte haben (Spalte kann
      * mit {@code AS} in SQL umbenannt werden).
-     * <br><br> 
+     * <br><br>
      * Es gibt auch noch die Klasse {@code BeanPropertyRowMapper}, aber
      * dieses funktioniert nicht mit Record-Klassen.
      */
-    private final DataClassRowMapper<TagebuchEintrag> _eintragDataClassRowMapper; 
+    private final DataClassRowMapper<TagebuchEintrag> _eintragDataClassRowMapper;
 
 
     /**
-     * Konstruktor für Dependency Injection und Erzeugung der 
+     * Konstruktor für Dependency Injection und Erzeugung der
      * {@code DataClassRowMapper}-Instanz.
      */
     @Autowired
@@ -74,7 +74,7 @@ public class Datenbank {
         _jdbcTemplate           = jdbcTemplate;
         _nutzerRowMapper        = nutzerRowMapper;
         _namedParamJdbcTemplate = namedParamJdbcTemplate;
-        
+
         _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
     }
 
@@ -118,6 +118,8 @@ public class Datenbank {
      *         Bedarf gekürzt und dann mit "..." am Ende versehen.
      *         Die Datumswerte sind wie im folgenden Beispiel formatiert:
      *         {@code 24.04.2024 (Do.)}
+     *         Es wird auch das Feld {@code link} gesetzt, das den Link zur
+     *         Detailansicht des Eintrags enthält.
      */
     public List<TagebuchEintrag> getAlleTagebuchEintraege(String nutzername) {
 
@@ -126,9 +128,11 @@ public class Datenbank {
                     SELECT t.id,
                            FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
                            CASE
-                               WHEN CHAR_LENGTH(eintrag) > 99 THEN CONCAT(SUBSTRING(eintrag, 1, 99), '...')
-                               ELSE eintrag
-                           END AS text
+                               WHEN CHAR_LENGTH(eintrag) > 99
+                                    THEN CONCAT(SUBSTRING(eintrag, 1, 99), '...')
+                                    ELSE eintrag
+                           END AS text,
+                           CONCAT('eintrag/', FORMATDATETIME(t.datum, 'yyyy-MM-dd')) AS link
                         FROM tagebucheintrag t, nutzer n
                         WHERE t.nutzer_id = n.id
                           AND n.nutzername = ?
@@ -149,7 +153,7 @@ public class Datenbank {
         }
         catch (DataAccessException ex) {
 
-            LOG.error("Fehler bei Abfrage ALLER Tagebucheinträge für Nutzer \"{}\".", 
+            LOG.error("Fehler bei Abfrage ALLER Tagebucheinträge für Nutzer \"{}\".",
                        nutzername, ex );
             return emptyList();
         }
@@ -159,7 +163,7 @@ public class Datenbank {
     /**
      * Einzelnen Tagebucheintrag für {@code nutzername} und {@code datum} auslesen.
      * Die Methode sollte nur aufgerufen werden, wenn man sicher ist, dass es den
-     * Tagebucheintrag tatsächlich gibt (weil er etwa von der Methode 
+     * Tagebucheintrag tatsächlich gibt (weil er etwa von der Methode
      * {@link #getAlleTagebuchEintraege(String)} zurückgeliefert wurde).
      *
      * @param nutzername Name des Nutzers, für den der Einträge ausgelesen werden soll
@@ -167,7 +171,8 @@ public class Datenbank {
      * @param datum Datum im Format {@code YYYY-MM-DD}
      *
      * @return Optional enthält den gewünschten Tagebucheintrag für {@code nutzername}
-     *         und {@code datum} oder ist leer
+     *         und {@code datum} oder ist leer; wenn Tagebucheintrag gefunden wurde,
+     *         dann ist das Attribut {@code link} leer.
      */
     public Optional<TagebuchEintrag> getTagebuchEintrag(String nutzername, String datum) {
 
@@ -175,12 +180,13 @@ public class Datenbank {
                 """
                     SELECT t.id,
                            FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
-                           eintrag as text
+                           eintrag as text,
+                           '' AS link
                         FROM tagebucheintrag t, nutzer n
                         WHERE t.nutzer_id = n.id
                           AND n.nutzername = :nutzername
                           AND t.datum      = :datum
-                 """;
+                """;
 
         final MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("nutzername", nutzername);
@@ -188,23 +194,23 @@ public class Datenbank {
 
         try {
 
-            TagebuchEintrag eintrag = 
-                    _namedParamJdbcTemplate.queryForObject( preparedStatement, 
-                                                            params, 
+            TagebuchEintrag eintrag =
+                    _namedParamJdbcTemplate.queryForObject( preparedStatement,
+                                                            params,
                                                             _eintragDataClassRowMapper
-                                                          );            
+                                                          );
             return Optional.of( eintrag );
         }
         catch (EmptyResultDataAccessException ex) {
-            
+
             LOG.warn("Interner Fehler: Kein Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\" gefunden.",
-                    nutzername, datum );            
+                    nutzername, datum );
             return Optional.empty();
         }
         catch (DataAccessException ex) {
 
             LOG.error("Fehler beim Auslesen von Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\": " + ex,
-                      nutzername, datum ); 
+                      nutzername, datum );
             return Optional.empty();
         }
     }
