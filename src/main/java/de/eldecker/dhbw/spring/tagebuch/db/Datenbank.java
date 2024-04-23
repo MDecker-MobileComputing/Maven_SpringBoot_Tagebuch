@@ -10,13 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import de.eldecker.dhbw.spring.tagebuch.db.rowmapper.NutzerRowMapper;
-import de.eldecker.dhbw.spring.tagebuch.db.rowmapper.TagebuchEintragRowMapper;
 import de.eldecker.dhbw.spring.tagebuch.model.Nutzer;
 import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 
@@ -47,28 +46,36 @@ public class Datenbank {
      * vom Typ {@link Nutzer} abzubilden.
      */
     private final NutzerRowMapper _nutzerRowMapper;
-
+    
     /**
-     * Bean, um Ergebniszeile einer Query auf Objekte vom Typ
-     * {@link TagebuchEintrag} zu mappen.
+     * Objekt, das automatisch eine Ergebniszeile der DB-Anfrage auf ein
+     * Objekt der Record-Klasse {@link TagebuchEintrag} abbildet.
+     * <br><br>
+     * ACHTUNG: die Ergebniszeile muss für jedes Attribut der
+     * Record-Klasse eine gleichnamige Spalte haben (Spalte kann
+     * mit {@code AS} in SQL umbenannt werden).
+     * <br><br> 
+     * Es gibt auch noch die Klasse {@code BeanPropertyRowMapper}, aber
+     * dieses funktioniert nicht mit Record-Klassen.
      */
-    private final TagebuchEintragRowMapper _eintragRowMapper;
+    private final DataClassRowMapper<TagebuchEintrag> _eintragDataClassRowMapper; 
 
 
     /**
-     * Konstruktor für Dependency Injection.
+     * Konstruktor für Dependency Injection und Erzeugung der 
+     * {@code DataClassRowMapper}-Instanz.
      */
     @Autowired
     public Datenbank( JdbcTemplate jdbcTemplate,
                       NutzerRowMapper nutzerRowMapper,
-                      TagebuchEintragRowMapper eintragRowMapper,
                       NamedParameterJdbcTemplate namedParamJdbcTemplate
                     ) {
 
         _jdbcTemplate           = jdbcTemplate;
         _nutzerRowMapper        = nutzerRowMapper;
-        _eintragRowMapper       = eintragRowMapper;
         _namedParamJdbcTemplate = namedParamJdbcTemplate;
+        
+        _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
     }
 
 
@@ -99,7 +106,8 @@ public class Datenbank {
 
 
     /**
-     * Alle Tagebucheinträge für {@code nutzername} abfragen.
+     * Alle Tagebucheinträge für {@code nutzername} abfragen, wobei der eigentliche
+     * Text ggf. abgekürzt wird.
      *
      * @param nutzername Name des Nutzers, für den alle Einträge zurückgegeben
      *                   werden sollen.
@@ -120,7 +128,7 @@ public class Datenbank {
                            CASE
                                WHEN CHAR_LENGTH(eintrag) > 99 THEN CONCAT(SUBSTRING(eintrag, 1, 99), '...')
                                ELSE eintrag
-                           END AS eintrag
+                           END AS text
                         FROM tagebucheintrag t, nutzer n
                         WHERE t.nutzer_id = n.id
                           AND n.nutzername = ?
@@ -130,7 +138,7 @@ public class Datenbank {
 
             List<TagebuchEintrag> ergebnisListe =
                     _jdbcTemplate.query( preparedStatement,
-                                         _eintragRowMapper,
+                                         _eintragDataClassRowMapper,
                                          nutzername // Platzhalterwert für Prepared Statement
                                        );
 
@@ -141,7 +149,8 @@ public class Datenbank {
         }
         catch (DataAccessException ex) {
 
-            LOG.error("Fehler bei Abfrage Einträge für Nutzer \"{}\": " + ex, nutzername );
+            LOG.error("Fehler bei Abfrage ALLER Tagebucheinträge für Nutzer \"{}\".", 
+                       nutzername, ex );
             return emptyList();
         }
     }
@@ -166,7 +175,7 @@ public class Datenbank {
                 """
                     SELECT t.id,
                            FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
-                           eintrag,
+                           eintrag as text
                         FROM tagebucheintrag t, nutzer n
                         WHERE t.nutzer_id = n.id
                           AND n.nutzername = :nutzername
@@ -182,7 +191,7 @@ public class Datenbank {
             TagebuchEintrag eintrag = 
                     _namedParamJdbcTemplate.queryForObject( preparedStatement, 
                                                             params, 
-                                                            _eintragRowMapper
+                                                            _eintragDataClassRowMapper
                                                           );            
             return Optional.of( eintrag );
         }

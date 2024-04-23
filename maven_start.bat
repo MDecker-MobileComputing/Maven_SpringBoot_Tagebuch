@@ -1,4 +1,5 @@
 
-del /Q logdatei.log
+@del /Q logdatei.log
+
 mvnw clean spring-boot:run
 
