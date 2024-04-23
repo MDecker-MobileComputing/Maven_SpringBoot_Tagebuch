@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
+import de.eldecker.dhbw.spring.tagebuch.helferlein.HeuteEintragChecker;
 import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 
 
@@ -51,7 +52,7 @@ public class ThymeleafWebController {
     
     /** Key für String-Attribut mit eigentlichem Inhalt des Tagebucheintrags im Template "eintrag". */
     private static final String ATTRIBUT_EINTRAG_TEXT = "eintrag_text";
-    
+            
     /** 
      * Key für String-Attribut mit dem Nutzer anzuzeigenden Text (Warnung, Fehler, ...),
      * wird von allen Templates verwendet. 
@@ -59,17 +60,30 @@ public class ThymeleafWebController {
     private static final String ATTRIBUT_MELDUNG = "meldung";
     
     /**
-     * Repository-Bean für Zugriff auf Datenbank.
+     * Key für bool'sches Attribut das genau dann {@code true} ist, wenn die Liste auf der
+     * Hauptseite auch einen Eintrag für den aktuellen Tag enthält (nämlich den obersten
+     * Eintrag), oder ein auf der Detailseite angezeigter Eintrag für den aktuellen Tag
+     * ist. Diese Information ist erforderlich, weil nur Tagebucheinträge für den aktuellen
+     * Tag angelegt bzw. geändert werden können.
      */
+    private static final String ATTRIBUT_EINTRAG_FUER_HEUTE = "eintrag_fuer_heute";
+    
+    
+    /** Repository-Bean für Zugriff auf Datenbank. */
     private final Datenbank _datenbank;
+    
+    /** Bean zur Überprüfung, ob ein bestimmter Tagebucheintrag für das heutige Datum ist. */
+    private final HeuteEintragChecker _heuteEintragChecker;
     
     
     /**
      * Konstruktor für Dependency Injection. 
      */
-    public ThymeleafWebController(Datenbank datenbank) {
-        
-        _datenbank = datenbank;
+    public ThymeleafWebController( Datenbank datenbank, 
+                                   HeuteEintragChecker heuteEintragChecker ) { 
+                                         
+        _datenbank           = datenbank;
+        _heuteEintragChecker = heuteEintragChecker;
     }
 
 
@@ -93,10 +107,13 @@ public class ThymeleafWebController {
         model.addAttribute(ATTRIBUT_NAME_NUTZERNAME, nutzername );
         LOG.info( "Hauptseite aufgerufen von: {}"  , nutzername );        
         
-        List<TagebuchEintrag> eintrageListe = _datenbank.getAlleTagebuchEintraege(nutzername);
-        model.addAttribute( ATTRIBUT_LISTE_TAGEBUCHEINTRAEGE, eintrageListe );
+        List<TagebuchEintrag> eintraegeListe = _datenbank.getAlleTagebuchEintraege(nutzername);
+        model.addAttribute( ATTRIBUT_LISTE_TAGEBUCHEINTRAEGE, eintraegeListe );
         
-        if ( eintrageListe.isEmpty() ) {
+        final boolean hatEintragFuerHeute = _heuteEintragChecker.hatEintragFuerHeute(eintraegeListe);
+        model.addAttribute(ATTRIBUT_EINTRAG_FUER_HEUTE, hatEintragFuerHeute);
+        
+        if ( eintraegeListe.isEmpty() ) {
             
             model.addAttribute( ATTRIBUT_MELDUNG, "Keine Tagebucheinträge vorhanden");
         }
@@ -137,6 +154,10 @@ public class ThymeleafWebController {
             model.addAttribute( ATTRIBUT_EINTRAG_DATUM, eintrag.datum() );
             model.addAttribute( ATTRIBUT_EINTRAG_TEXT , eintrag.text()  );
             
+            final boolean istEintragFuerHeute = _heuteEintragChecker.istEintragFuerHeute(eintrag);
+            model.addAttribute(ATTRIBUT_EINTRAG_FUER_HEUTE, istEintragFuerHeute);
+            
+                                    
             LOG.info("Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\" wird angezeigt.",
                       nutzername, datum );            
         } else {

@@ -20,6 +20,12 @@
   </p>
   <br>
 
+  <!-- Link für neuen Eintrag anzeigen, wenn es noch keinen Eintrag für das heutige Datum gibt. -->
+  <p th:if="${not eintrag_fuer_heute}">
+    <a href="/neuAendern">Neuer Eintrag</a>
+  </p>
+  <br>
+
   <div th:each="eintrag : ${tagebucheintrage}">
     <p>
        <span class="fett"   th:text="${eintrag.datum + ':'}"></span>

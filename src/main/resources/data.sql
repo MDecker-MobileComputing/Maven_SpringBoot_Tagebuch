@@ -35,3 +35,9 @@ MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
     VALUES ( 2, '2024-03-15', 'Heute habe ich verschlafen' );
+
+
+-- Vorlage INSERT-Statement für H2-Console:
+--
+--   INSERT INTO tagebucheintrag (nutzer_id, datum, eintrag)
+--       VALUES (1, '2024-04-23', 'Heute ist es kalt aber sonnig.');
