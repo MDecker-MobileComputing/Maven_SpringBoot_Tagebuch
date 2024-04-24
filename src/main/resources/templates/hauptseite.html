@@ -10,20 +10,18 @@
 
   <h1>Tagebuch von <span th:text="${nutzername}"></span></h1>
 
-  <p class="fett" th:if="${meldung != null}">
+  <p class="meldung" th:if="${meldung != null}">
     <span th:text="${meldung}"></span>
   </p>
 
-  <p th:if="${tagebucheintrage.size() > 0}">
+  <p th:if="${tagebucheintrage.size() > 0}" class="abstand_unten">
     Anzahl Tagebucheinträge: <span th:text="${tagebucheintrage.size()}"></span>
   </p>
-  <br>
 
   <!-- Link für neuen Eintrag anzeigen, wenn es noch keinen Eintrag für das heutige Datum gibt. -->
-  <p th:if="${not eintrag_fuer_heute}">
+  <p th:if="${not eintrag_fuer_heute}" class="abstand_unten">
     <a href="neu">Neuer Eintrag</a>
   </p>
-  <br>
 
   <div th:each="eintrag : ${tagebucheintrage}">
     <p>

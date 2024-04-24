@@ -11,17 +11,20 @@
   <h1>
     Tagebucheintrag von
     <span th:text="${nutzername}"></span>
-      für den
+    für den
     <span th:text="${eintrag_datum}"></span>
   </h1>
 
-  <p class="fett" th:if="${meldung != null}">
+  <p class="meldung" th:if="${meldung != null}">
      <span th:text="${meldung}"></span>
   </p>
 
-  <p class="kursiv" th:text="${eintrag_text}"></p>
+  <p class="kursiv abstand_unten" th:text="${eintrag_text}"></p>
 
-  <br>
+  <!-- Nur Eintrag für aktuellen Tag kann geändert werden. -->
+  <p th:if="${eintrag_fuer_heute}">
+    <a href="../aendern">Ändern</a>
+  </p>
 
   <a href="../hauptseite">Zurück zur Hauptseite</a>
 
