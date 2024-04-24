@@ -50,15 +50,15 @@ public class Datenbank {
     private final NutzerRowMapper _nutzerRowMapper;
 
     /**
-     * Objekt, das automatisch eine Ergebniszeile der DB-Anfrage auf ein
-     * Objekt der Record-Klasse {@link TagebuchEintrag} abbildet.
+     * Objekt, das automatisch eine Ergebniszeile der DB-Anfrage auf 
+     * ein Objekt der Record-Klasse {@link TagebuchEintrag} abbildet.
      * <br><br>
      * ACHTUNG: die Ergebniszeile muss für jedes Attribut der
      * Record-Klasse eine gleichnamige Spalte haben (Spalte kann
      * mit {@code AS} in SQL umbenannt werden).
      * <br><br>
-     * Es gibt auch noch die Klasse {@code BeanPropertyRowMapper}, aber
-     * dieses funktioniert nicht mit Record-Klassen.
+     * Es gibt auch noch die Klasse {@code BeanPropertyRowMapper}, 
+     * aber dieses funktioniert nicht mit Record-Klassen.
      */
     private final DataClassRowMapper<TagebuchEintrag> _eintragDataClassRowMapper;
 
@@ -95,13 +95,13 @@ public class Datenbank {
                     _jdbcTemplate.query( "SELECT * FROM nutzer ORDER BY nutzername",
                                          _nutzerRowMapper );
 
-            LOG.info("Alle {} Nutzer von DB ausgelesen.", ergebnisListe.size() );
+            LOG.info( "Alle {} Nutzer von DB ausgelesen.", ergebnisListe.size() );
 
             return ergebnisListe;
         }
         catch (DataAccessException ex) {
 
-            LOG.error("Fehler bei Abfrage aller Nutzer von Datenbank.", ex);
+            LOG.error( "Fehler bei Abfrage aller Nutzer von Datenbank.", ex );
             return emptyList();
         }
     }
@@ -148,14 +148,14 @@ public class Datenbank {
                                          nutzername // Platzhalterwert für Prepared Statement
                                        );
 
-            LOG.info("Anzahl Tagebucheinträge für Nutzer \"{}\" ausgelesen: {}",
-                     nutzername, ergebnisListe.size() );
+            LOG.info( "Anzahl Tagebucheinträge für Nutzer \"{}\" ausgelesen: {}",
+                      nutzername, ergebnisListe.size() );
 
             return ergebnisListe;
         }
         catch (DataAccessException ex) {
 
-            LOG.error("Fehler bei Abfrage ALLER Tagebucheinträge für Nutzer \"{}\".",
+            LOG.error( "Fehler bei Abfrage ALLER Tagebucheinträge für Nutzer \"{}\".",
                        nutzername, ex );
             return emptyList();
         }
@@ -193,8 +193,8 @@ public class Datenbank {
                 """;
 
         final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("nutzername", nutzername);
-        params.addValue("datum"     , datum);
+        params.addValue( "nutzername", nutzername );
+        params.addValue( "datum"     , datum      );
 
         try {
 
@@ -207,14 +207,14 @@ public class Datenbank {
         }
         catch (EmptyResultDataAccessException ex) {
 
-            LOG.warn("Interner Fehler: Kein Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\" gefunden.",
-                    nutzername, datum );
+            LOG.warn( "Interner Fehler: Kein Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\" gefunden.",
+                      nutzername, datum );
             return Optional.empty();
         }
         catch (DataAccessException ex) {
 
-            LOG.error("Fehler beim Auslesen von Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\": " + ex,
-                      nutzername, datum );
+            LOG.error( "Fehler beim Auslesen von Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\": " + ex,
+                       nutzername, datum );
             return Optional.empty();
         }
     }

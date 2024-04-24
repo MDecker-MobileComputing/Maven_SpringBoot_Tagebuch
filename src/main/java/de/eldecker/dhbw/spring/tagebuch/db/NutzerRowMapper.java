@@ -37,11 +37,11 @@ public class NutzerRowMapper implements RowMapper<Nutzer> {
     @Override
     public Nutzer mapRow(ResultSet rs, int rowNum) throws SQLException {
         
-        final int    id         = rs.getInt("id");
-        final String nutzerName = rs.getString("nutzername");
-        final String passwort   = rs.getString("passwort"  );
+        final int    id         = rs.getInt(    "id"         );
+        final String nutzerName = rs.getString( "nutzername" );
+        final String passwort   = rs.getString( "passwort"   );
         
-        return new Nutzer(id, nutzerName, passwort);
+        return new Nutzer( id, nutzerName, passwort );
     }
 
 }

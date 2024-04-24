@@ -19,20 +19,20 @@ import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 public class HeuteEintragChecker {
 
     /** Datumsformatierer für Format {@code dd.MM.yyyy}, z.B. {@code 23.04.2024}. */
-    private DateTimeFormatter _datumFormatierer = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private DateTimeFormatter _datumFormatierer = DateTimeFormatter.ofPattern( "dd.MM.yyyy" );
     
     
     /**
-     * Gibt aktuelles Datum im Format {@code YYYY-MM-dd} zurück (wird bei jedem Aufruf neu
-     * berechnet, stimmt also auch, wenn Anwendung mehr als einen Tag lang läuft).
+     * Gibt aktuelles Datum im Format {@code YYYY-MM-dd} zurück (wird bei jedem Aufruf 
+     * neu berechnet, stimmt also auch, wenn Anwendung mehr als einen Tag lang läuft).
      * 
      * @return Heutiges Datum im Format {@code YYYY-MM-dd}
      */
     private String getHeuteDatumString() {
         
-        LocalDate heute = LocalDate.now();
+        final LocalDate heute = LocalDate.now();
         
-        return _datumFormatierer.format(heute);
+        return _datumFormatierer.format( heute );
     }
     
     
@@ -40,22 +40,22 @@ public class HeuteEintragChecker {
      * Prüft, ob in absteigend sortierter Liste von Tagebucheinträgen der erste
      * Eintrag für das heutige Datum ist.
      * 
-     * @param eintraegeListe List von Tagebucheinträgen, muss absteigend sortiert sein
-     *                       (also Eintrag für jüngstes Datum an erster Stelle); es wird
-     *                       auch der Fall berücksichtigt, dass die Liste keine Einträge
-     *                       enthält.
+     * @param eintraegeListe List von Tagebucheinträgen, muss absteigend sortiert 
+     *                       sein (also Eintrag für jüngstes Datum an erster Stelle); 
+     *                       es wird auch der Fall berücksichtigt, dass die Liste 
+     *                       keine Einträge enthält.
      * 
      * @return {@code true} gdw. der erste Eintrag von {@code eintrageListe}
      *         für das heutige Datum ist.
      */
-    public boolean hatEintragFuerHeute(List<TagebuchEintrag> eintraegeListe) {
+    public boolean hatEintragFuerHeute( List<TagebuchEintrag> eintraegeListe ) {
         
-        if (eintraegeListe.size() < 1) {
+        if ( eintraegeListe.size() < 1 ) {
             
             return false;
         }
         
-        final TagebuchEintrag eintrag = eintraegeListe.get(0);
+        final TagebuchEintrag eintrag = eintraegeListe.get( 0 );
         
         return istEintragFuerHeute( eintrag );
     }
@@ -64,13 +64,13 @@ public class HeuteEintragChecker {
     /**
      * Überprüft, ob {@code eintrag} für das aktuelle Datum ist.
      * 
-     * @param eintrag Tagebucheintrag, für den zu überprüfen ist, ober  
-     *                er für den aktuellen Tag ist.
+     * @param eintrag Tagebucheintrag, für den zu überprüfen ist,   
+     *                ob er für den aktuellen Tag ist.
      *                
-     * @return {@code true} gdw. {@code eintrag} als Datum den Wert für
-     *         den aktuellen Tag hat.                        
+     * @return {@code true} gdw. {@code eintrag} als Datum den Wert 
+     *         für den aktuellen Tag hat.                        
      */
-    public boolean istEintragFuerHeute(TagebuchEintrag eintrag) {
+    public boolean istEintragFuerHeute( TagebuchEintrag eintrag ) {
         
         final String heuteDatumString = getHeuteDatumString();
         

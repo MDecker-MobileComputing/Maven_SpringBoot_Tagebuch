@@ -65,13 +65,12 @@ public class BasicAuthenticationKonfiguration {
      */
     @Bean
     @Order(1)
-    public SecurityFilterChain filterKetteFuerBeschraenktePfade(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterKetteFuerBeschraenktePfade( HttpSecurity http ) throws Exception {
 
-        return http.securityMatcher("/app/**")
+        return http.securityMatcher( "/app/**" )
                    .authorizeHttpRequests(
                         request -> request.anyRequest().authenticated()
                    )
-                   //.formLogin( withDefaults() )
                    .httpBasic( withDefaults() )
                    .build();
     }
@@ -82,9 +81,9 @@ public class BasicAuthenticationKonfiguration {
      */
     @Bean
     @Order(2)
-    public SecurityFilterChain filterKetteFuerFreiePfade(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterKetteFuerFreiePfade( HttpSecurity http ) throws Exception {
 
-        return http.securityMatcher("/", "/h2-console/**")
+        return http.securityMatcher( "/", "/h2-console/**" )
                 .authorizeHttpRequests(
                      request -> request.anyRequest().permitAll()
                 )
@@ -100,7 +99,7 @@ public class BasicAuthenticationKonfiguration {
      * @return Objekt mit allen Nutzernamen und Passwörtern
      */
     @Bean
-    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+    public InMemoryUserDetailsManager userDetailsService( PasswordEncoder passwordEncoder ) {
 
         /*
         UserDetails user1 = User.withUsername("alice")
@@ -114,27 +113,26 @@ public class BasicAuthenticationKonfiguration {
                                 .build();
         */                                
 
-        List<Nutzer> nutzerListe = _datenbank.getAlleNutzer();
+        final List<Nutzer> nutzerListe = _datenbank.getAlleNutzer();
                 
-        List<UserDetails> userDetailsList = nutzerListe.stream()
-                .map(nutzer -> {
-                    
-                    final String nutzername        = nutzer.nutzername();
-                    final String passwortEncoded   = passwordEncoder.encode( nutzer.passwort() );
-                    
-                    //LOG.info("Password kodiert: " + passwortEncoded);
-                    
-                    UserDetails userDetails = User.withUsername(nutzername)
-                                                  .password(passwortEncoded)
-                                                  .roles(ROLLE_NUTZER)
-                                                  .build();
-                            return userDetails;
-                })
-                .collect( toList() );
+        List<UserDetails> userDetailsList = 
+                nutzerListe.stream()
+                           .map( nutzer -> {
+                                
+                                 final String nutzername        = nutzer.nutzername();
+                                 final String passwortEncoded   = passwordEncoder.encode( nutzer.passwort() );
+                                
+                                 final UserDetails userDetails = User.withUsername( nutzername )
+                                                                     .password( passwortEncoded )
+                                                                     .roles( ROLLE_NUTZER )
+                                                                     .build();
+                                 return userDetails;
+                           })
+                           .collect( toList() );
         
-        LOG.info("Anzahl Nutzer für Authentifzierung geladen: {}", nutzerListe.size());
+        LOG.info( "Anzahl Nutzer für Authentifzierung geladen: {}", nutzerListe.size() );
         
-        return new InMemoryUserDetailsManager(userDetailsList);
+        return new InMemoryUserDetailsManager( userDetailsList );
     }
 
 

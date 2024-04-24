@@ -68,6 +68,9 @@ public class ThymeleafWebController {
      */
     private static final String ATTRIBUT_EINTRAG_FUER_HEUTE = "eintrag_fuer_heute";
     
+    /** Titel für Seite für neuen oder zu ändernden Tagebucheintrag. */
+    private static final String ATTRIBUT_SEITENTITEL = "seitentitel";
+    
     
     /** Repository-Bean für Zugriff auf Datenbank. */
     private final Datenbank _datenbank;
@@ -96,7 +99,7 @@ public class ThymeleafWebController {
      * @param model Objekt, in das die Werte für die Platzhalter in der Template-Datei
      *              geschrieben werden.
      *
-     * @return Name der Template-Datei, die angezeigt werden soll;
+     * @return Name der Template-Datei {@code hauptseite.html}, die angezeigt werden soll;
      *         wird in Ordner {@code src/main/resources/templates/} gesucht.
      */
     @GetMapping("/hauptseite")
@@ -104,18 +107,18 @@ public class ThymeleafWebController {
                                      Model model ) {
 
         final String nutzername = authentication.getName();
-        model.addAttribute(ATTRIBUT_NAME_NUTZERNAME, nutzername );
-        LOG.info( "Hauptseite aufgerufen von: {}"  , nutzername );        
+        model.addAttribute( ATTRIBUT_NAME_NUTZERNAME, nutzername );
+        LOG.info( "Hauptseite aufgerufen von: {}"   , nutzername );        
         
-        List<TagebuchEintrag> eintraegeListe = _datenbank.getAlleTagebuchEintraege(nutzername);
+        List<TagebuchEintrag> eintraegeListe = _datenbank.getAlleTagebuchEintraege( nutzername );
         model.addAttribute( ATTRIBUT_LISTE_TAGEBUCHEINTRAEGE, eintraegeListe );
         
-        final boolean hatEintragFuerHeute = _heuteEintragChecker.hatEintragFuerHeute(eintraegeListe);
-        model.addAttribute(ATTRIBUT_EINTRAG_FUER_HEUTE, hatEintragFuerHeute);
+        final boolean hatEintragFuerHeute = _heuteEintragChecker.hatEintragFuerHeute( eintraegeListe );
+        model.addAttribute ( ATTRIBUT_EINTRAG_FUER_HEUTE, hatEintragFuerHeute );
         
         if ( eintraegeListe.isEmpty() ) {
             
-            model.addAttribute( ATTRIBUT_MELDUNG, "Keine Tagebucheinträge vorhanden");
+            model.addAttribute( ATTRIBUT_MELDUNG, "Keine Tagebucheinträge vorhanden" );
         }
         
         return TEMPLATE_HAUPTSEITE;
@@ -133,7 +136,7 @@ public class ThymeleafWebController {
      *              
      * @param datum Datum im Format {@code YYYY-MM-DD}
      *
-     * @return Name der Template-Datei, die angezeigt werden soll;
+     * @return Name der Template-Datei {@code eintrag.html}, die angezeigt werden soll;
      *         wird in Ordner {@code src/main/resources/templates/} gesucht.
      */
     @GetMapping("/eintrag/{datum}")
@@ -155,10 +158,10 @@ public class ThymeleafWebController {
             model.addAttribute( ATTRIBUT_EINTRAG_TEXT , eintrag.text()  );
             
             final boolean istEintragFuerHeute = _heuteEintragChecker.istEintragFuerHeute(eintrag);
-            model.addAttribute(ATTRIBUT_EINTRAG_FUER_HEUTE, istEintragFuerHeute);
+            model.addAttribute( ATTRIBUT_EINTRAG_FUER_HEUTE, istEintragFuerHeute );
             
                                     
-            LOG.info("Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\" wird angezeigt.",
+            LOG.info( "Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\" wird angezeigt.",
                       nutzername, datum );            
         } else {
                         
@@ -167,10 +170,28 @@ public class ThymeleafWebController {
             model.addAttribute( ATTRIBUT_EINTRAG_DATUM, datum );
             model.addAttribute( ATTRIBUT_EINTRAG_TEXT , ""    );
             
-            LOG.warn("Angeforderter Tagebucheintrag wurde nicht gefunden.");
+            LOG.warn( "Angeforderter Tagebucheintrag wurde nicht gefunden." );
         }
         
         return TEMPLATE_EINTRAG;
+    }
+    
+    
+    /**
+     * Neuen Tagebucheintrag für aktuellen 
+     * 
+     * @param model Objekt, in das die Werte für die Platzhalter in der Template-Datei
+     *              geschrieben werden.
+     * 
+     * @return Name der Template-Datei {@code neu_aendern.html}, die angezeigt werden soll;
+     *         wird in Ordner {@code src/main/resources/templates/} gesucht.
+     */
+    @GetMapping("/neu")
+    public String eintragNeu( Model model ) {
+
+        model.addAttribute( ATTRIBUT_SEITENTITEL, "Neuen Tagebucheintrag anlegen" );
+        
+        return "neu_aendern";
     }
 
 }

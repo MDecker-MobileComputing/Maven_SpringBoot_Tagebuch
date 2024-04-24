@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
-  <html xmlns:th="http://www.thymeleaf.org"></html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Tagebuch: Überblick</title>
     <meta charset="utf-8" >
@@ -22,15 +21,15 @@
 
   <!-- Link für neuen Eintrag anzeigen, wenn es noch keinen Eintrag für das heutige Datum gibt. -->
   <p th:if="${not eintrag_fuer_heute}">
-    <a href="/neuAendern">Neuer Eintrag</a>
+    <a href="neu">Neuer Eintrag</a>
   </p>
   <br>
 
   <div th:each="eintrag : ${tagebucheintrage}">
     <p>
-       <span class="fett"   th:text="${eintrag.datum + ':'}"></span>
-       <span class="kursiv" th:text="${eintrag.text}" ></span>
-      (<a th:href="@{${eintrag.link}}">Öffnen</a>)
+       <span class="fett"   th:text="${eintrag.datum + ':'}" ></span>
+       <span class="kursiv" th:text="${eintrag.text}"        ></span>
+       ( <a th:href="@{${eintrag.link}}">Öffnen</a> )
     </p>
   </div>
 
