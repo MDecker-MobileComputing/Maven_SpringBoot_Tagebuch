@@ -10,5 +10,17 @@
 
   <h1 th:text="${seitentitel}"></h1>
 
+  <textarea th:text="${alterText}" rows="10">
+  </textarea>
+
+  <div>
+    <a href="#" onclick="return onSpeichernButton();">Speichern</a>
+    &nbsp;
+    <a href="hauptseite">Abbrechen</a>
+  </div>
+
+  <!-- Erst JavaScript-Datei laden, wenn DOM-Baum geladen ist. -->
+  <script src="../../neuAendern.js"></script>
+
 </body>
 </html>

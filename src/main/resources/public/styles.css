@@ -24,3 +24,13 @@ ul li {
 .kursiv {
     font-style: italic;
 }
+
+textarea {
+    width: 100%;
+    margin-bottom: 1.5em
+}
+@media (min-width: 800px) {
+    textarea {
+        width: 50%;
+    }
+}

@@ -71,6 +71,9 @@ public class ThymeleafWebController {
     /** Titel für Seite für neuen oder zu ändernden Tagebucheintrag. */
     private static final String ATTRIBUT_SEITENTITEL = "seitentitel";
     
+    /** String mit bisherigem Text, wenn ein Tagebucheintrag zu ändern ist. */
+    private static final String ATTRIBUT_ALTER_TEXT = "alterText";
+    
     
     /** Repository-Bean für Zugriff auf Datenbank. */
     private final Datenbank _datenbank;
@@ -99,8 +102,8 @@ public class ThymeleafWebController {
      * @param model Objekt, in das die Werte für die Platzhalter in der Template-Datei
      *              geschrieben werden.
      *
-     * @return Name der Template-Datei {@code hauptseite.html}, die angezeigt werden soll;
-     *         wird in Ordner {@code src/main/resources/templates/} gesucht.
+     * @return Name (ohne Suffix)  der Template-Datei {@code hauptseite.html}, die angezeigt 
+     *         werden soll; wird in Ordner {@code src/main/resources/templates/} gesucht.
      */
     @GetMapping("/hauptseite")
     public String hauptseiteAnzeige( Authentication authentication,
@@ -136,8 +139,8 @@ public class ThymeleafWebController {
      *              
      * @param datum Datum im Format {@code YYYY-MM-DD}
      *
-     * @return Name der Template-Datei {@code eintrag.html}, die angezeigt werden soll;
-     *         wird in Ordner {@code src/main/resources/templates/} gesucht.
+     * @return Name (ohne Suffix) der Template-Datei {@code eintrag.html}, die angezeigt 
+     *         werden soll; wird in Ordner {@code src/main/resources/templates/} gesucht.
      */
     @GetMapping("/eintrag/{datum}")
     public String eintragAnzeigen( Authentication authentication,
@@ -183,15 +186,36 @@ public class ThymeleafWebController {
      * @param model Objekt, in das die Werte für die Platzhalter in der Template-Datei
      *              geschrieben werden.
      * 
-     * @return Name der Template-Datei {@code neu_aendern.html}, die angezeigt werden soll;
-     *         wird in Ordner {@code src/main/resources/templates/} gesucht.
+     * @return Name (ohne Suffix) der Template-Datei {@code neu_aendern.html}, 
+     *         die angezeigt werden soll; wird in Ordner {@code src/main/resources/templates/} 
+     *         gesucht.         
      */
     @GetMapping("/neu")
     public String eintragNeu( Model model ) {
 
         model.addAttribute( ATTRIBUT_SEITENTITEL, "Neuen Tagebucheintrag anlegen" );
+        model.addAttribute( ATTRIBUT_ALTER_TEXT , "" );
         
         return "neu_aendern";
     }
+    
+    
+    /**
+     * Tagebucheintrag für heutigen Tag ändern.
+     * 
+     * @param model Objekt, in das die Werte für die Platzhalter in der Template-Datei
+     *              geschrieben werden.
+     *              
+     * @return Name der Template-Datei {@code neu_aendern.html}, die angezeigt werden soll;
+     *         wird in Ordner {@code src/main/resources/templates/} gesucht.
+     */
+    @GetMapping("/aendern")
+    public String eintragAendern( Model model ) {
+
+        model.addAttribute( ATTRIBUT_SEITENTITEL, "Tagebucheintrag für heute ändern" );
+        model.addAttribute( ATTRIBUT_ALTER_TEXT , "Alter Text" );
+        
+        return "neu_aendern";
+    }    
 
 }
