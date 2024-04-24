@@ -51,7 +51,7 @@ public class BasicAuthenticationKonfiguration {
 
 
     /**
-     * Konstruktor für Dependency Injection.
+     * Konstruktor für <i>Dependency Injection</i>.
      */
     @Autowired
     public BasicAuthenticationKonfiguration(Datenbank datenbank) {
@@ -61,13 +61,15 @@ public class BasicAuthenticationKonfiguration {
 
 
     /**
-     * Für Requests, deren Pfad mit {@code /app/} beginnt, wird Basic Authentication gefordert.
+     * Für Requests, deren Pfad mit {@code /app/} oder {@code api} beginnt muss sich der
+     * Nutzer mit <ib>Basic Authentication</i> authentifzieren (Nutzername und Passwort
+     * müssen in einen vom Browser angezeigten Dialog eingegeben werden). 
      */
     @Bean
     @Order(1)
     public SecurityFilterChain filterKetteFuerBeschraenktePfade( HttpSecurity http ) throws Exception {
 
-        return http.securityMatcher( "/app/**" )
+        return http.securityMatcher( "/app/**", "/api/**" )
                    .authorizeHttpRequests(
                         request -> request.anyRequest().authenticated()
                    )
