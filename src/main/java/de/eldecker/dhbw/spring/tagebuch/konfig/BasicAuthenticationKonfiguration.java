@@ -1,5 +1,7 @@
 package de.eldecker.dhbw.spring.tagebuch.konfig;
 
+ 
+
 import static java.util.stream.Collectors.toList;
 import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
 
@@ -15,6 +17,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,7 +58,7 @@ public class BasicAuthenticationKonfiguration {
      * Konstruktor für <i>Dependency Injection</i>.
      */
     @Autowired
-    public BasicAuthenticationKonfiguration(Datenbank datenbank) {
+    public BasicAuthenticationKonfiguration( Datenbank datenbank ) {
 
         _datenbank = datenbank;
     }
@@ -69,26 +73,30 @@ public class BasicAuthenticationKonfiguration {
     @Order(1)
     public SecurityFilterChain filterKetteFuerBeschraenktePfade( HttpSecurity http ) throws Exception {
 
-        return http.securityMatcher( "/app/**", "/api/**" )
+        return http.securityMatcher( "/app/**" )
                    .authorizeHttpRequests(
                         request -> request.anyRequest().authenticated()
                    )
-                   .httpBasic( withDefaults() )
+                   .httpBasic( withDefaults() )                   
+//                 .sessionManagement( session-> 
+//                           session.sessionCreationPolicy( SessionCreationPolicy.ALWAYS ) // JSESSIONID
+//                                  .sessionFixation().newSession() )
                    .build();
     }
 
 
     /**
-     * Für sonstige Requests (weil {@code Order(2)} wird keine Authentifizierung gefordert.
+     * Für sonstige Requests (weil {@code Order(2)}) wird keine Authentifizierung gefordert.
      */
     @Bean
     @Order(2)
     public SecurityFilterChain filterKetteFuerFreiePfade( HttpSecurity http ) throws Exception {
 
-        return http.securityMatcher( "/", "/h2-console/**" )
+        return http.securityMatcher( "/", "/h2-console/**", "/api/**" )
                 .authorizeHttpRequests(
                      request -> request.anyRequest().permitAll()
                 )
+                .csrf( (csrf) -> csrf.disable() )                
                 .build();
     }
 

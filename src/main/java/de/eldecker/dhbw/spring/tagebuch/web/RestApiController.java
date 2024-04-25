@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 
@@ -20,12 +21,9 @@ import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
  * RestController für die REST-API-Endpunkte, mit denen das Frontend
  * (HTML/JavaScript) neue Tagebucheinträge oder Änderungen an das
  * Backend schickt.
- * <br><br>
- *
- * Alle Pfade beginnen mit {@code /app/api/v1/}.
  */
 @RestController
-@RequestMapping( "/app/api/v1" )
+@RequestMapping( "/api/v1" )
 public class RestApiController {
 
     private static Logger LOG = LoggerFactory.getLogger( RestApiController.class );
@@ -57,13 +55,25 @@ public class RestApiController {
      *         Erfolgsnachricht zurückgegeben.
      */
     @PostMapping( "/eintrag" )
-    public ResponseEntity<String> eintragNeuAendern( 
-                                       @RequestBody String textEintrag,
-                                       Authentication authentication ) {
-
-        final String nutzername = authentication.getName();
-        LOG.info( "Versuche für Nutzer \"{}\" Tagebucheintrag neu anzulegen oder zu ändern.", 
-                  nutzername );
+    public ResponseEntity<String> eintragNeuAendern( @RequestBody String textEintrag, 
+                                                     Authentication authentication ) { 
+                                                     
+        String nutzername = "???";
+        if (authentication != null) {
+            
+            nutzername = authentication.getName(); 
+        }                
+                
+        LOG.info( "REST-Endpunkt /eintrag aufgerufen von Nutzer \"{}\" mit folgendem Eintragstext: {}", 
+                  nutzername, textEintrag );
+        
+        /*
+        final String sessionId = httpServletRequest.getSession().getId();
+        LOG.info("Session-ID in HTTP-Post-Request: " + sessionId);
+        */
+        
+//        LOG.info( "Versuche für Nutzer \"{}\" Tagebucheintrag neu anzulegen oder zu ändern.", 
+//                  nutzername );
         
         return new ResponseEntity<>( "Tagebucheintrag auf DB gespeichert", CREATED );
     }

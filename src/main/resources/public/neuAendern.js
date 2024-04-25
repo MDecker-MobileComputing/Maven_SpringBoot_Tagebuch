@@ -23,7 +23,7 @@ function onSpeichernButton() {
 
     beitrag = beitrag.trim();
 
-    fetch( "/app/api/v1/eintrag", {
+    fetch( "/api/v1/eintrag", {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
         body: beitrag
