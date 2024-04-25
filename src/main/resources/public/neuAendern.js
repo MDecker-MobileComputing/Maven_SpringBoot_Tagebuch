@@ -1,5 +1,16 @@
 "use strict";
 
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
 /**
  * Event-Handler-Funktion für Klick auf den "Speichern"-Button.
  *
@@ -23,9 +34,13 @@ function onSpeichernButton() {
 
     beitrag = beitrag.trim();
 
+    const jsessionId = getCookie("JSESSIONID"); // Session-ID aus Cookie auslesen, um sie beim POST-Request mitzugeben
+
     fetch( "/api/v1/eintrag", {
         method: "POST",
-        headers: { "Content-Type": "text/plain" },
+        headers: {
+            "Content-Type": "text/plain",
+            "Cookie": `JSESSIONID=${jsessionId}` },
         body: beitrag
     })
     .then( response => {

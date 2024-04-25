@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
+import de.eldecker.dhbw.spring.tagebuch.konfig.BasicAuthenticationKonfiguration;
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -48,8 +50,14 @@ public class RestApiController {
      *
      * @param textEintrag Text von Tagebucheintrag
      *
-     * @param authentication Objekt, von dem der aktuell angemeldete Nutzer
-     *                       abgefragt wird
+     * @param authentication Objekt, von dem der aktuell angemeldete Nutzer abgefragt wird;
+     *                       damit dies auch für einen REST-Call muss im entsprechenden
+     *                       JavaScript-Code die Session-ID aus dem Cookie {@code JSESSIONID}
+     *                       ausgelesen und in the Request-Header kopiert werden; hierzu 
+     *                       muss auch konfiguriert sein, dass die {@code JSESSIONID} als
+     *                       Cookie von Spring Boot an den Browser geschickt wird, siehe
+     *                       Methode {@code filterKetteFuerBeschraenktePfade} in Klasse
+     *                       {@link BasicAuthenticationKonfiguration}.
      *                       
      * @return Im Erfolgsfall wird HTTP-Status-Code 201 (Created) mit einer 
      *         Erfolgsnachricht zurückgegeben.
@@ -66,14 +74,6 @@ public class RestApiController {
                 
         LOG.info( "REST-Endpunkt /eintrag aufgerufen von Nutzer \"{}\" mit folgendem Eintragstext: {}", 
                   nutzername, textEintrag );
-        
-        /*
-        final String sessionId = httpServletRequest.getSession().getId();
-        LOG.info("Session-ID in HTTP-Post-Request: " + sessionId);
-        */
-        
-//        LOG.info( "Versuche für Nutzer \"{}\" Tagebucheintrag neu anzulegen oder zu ändern.", 
-//                  nutzername );
         
         return new ResponseEntity<>( "Tagebucheintrag auf DB gespeichert", CREATED );
     }

@@ -1,8 +1,9 @@
 package de.eldecker.dhbw.spring.tagebuch.konfig;
 
- 
 
 import static java.util.stream.Collectors.toList;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.ALWAYS;
 import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
 
 import java.util.List;
@@ -17,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -65,8 +65,8 @@ public class BasicAuthenticationKonfiguration {
 
 
     /**
-     * Für Requests, deren Pfad mit {@code /app/} oder {@code api} beginnt muss sich der
-     * Nutzer mit <ib>Basic Authentication</i> authentifzieren (Nutzername und Passwort
+     * Für Requests, deren Pfad mit {@code /app/} beginnt, muss sich der Nutzer 
+     * mit <b>Basic Authentication</i> authentifzieren (Nutzername und Passwort
      * müssen in einen vom Browser angezeigten Dialog eingegeben werden). 
      */
     @Bean
@@ -78,9 +78,9 @@ public class BasicAuthenticationKonfiguration {
                         request -> request.anyRequest().authenticated()
                    )
                    .httpBasic( withDefaults() )                   
-//                 .sessionManagement( session-> 
-//                           session.sessionCreationPolicy( SessionCreationPolicy.ALWAYS ) // JSESSIONID
-//                                  .sessionFixation().newSession() )
+                   .sessionManagement( session-> 
+                           session.sessionCreationPolicy( ALWAYS ) // JSESSIONID; in application.properties: server.servlet.session.cookie.http-only=false
+                                  .sessionFixation().newSession() )                                  
                    .build();
     }
 
