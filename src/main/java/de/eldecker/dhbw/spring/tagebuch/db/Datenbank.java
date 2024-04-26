@@ -3,6 +3,9 @@ package de.eldecker.dhbw.spring.tagebuch.db;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.DataClassRowMapper;
@@ -65,6 +70,9 @@ public class Datenbank {
     private final DataClassRowMapper<TagebuchEintrag> _eintragDataClassRowMapper;
 
 
+    @Autowired
+    private ResourceLoader _resourceLoader;
+    
     /**
      * Prepared Statement (SQL) einlesen, welches in der Datei 
      * {@code PreparedStatements.properties} definiert wurde.
@@ -80,7 +88,8 @@ public class Datenbank {
     @Autowired
     public Datenbank( JdbcTemplate jdbcTemplate,
                       NutzerRowMapper nutzerRowMapper,
-                      NamedParameterJdbcTemplate namedParamJdbcTemplate
+                      NamedParameterJdbcTemplate namedParamJdbcTemplate,
+                      ResourceLoader resourceLoader
                     ) {
 
         _jdbcTemplate           = jdbcTemplate;
@@ -88,6 +97,8 @@ public class Datenbank {
         
         _namedParamJdbcTemplate    = namedParamJdbcTemplate;
         _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
+        
+        _resourceLoader = resourceLoader;
     }
 
 
@@ -226,36 +237,33 @@ public class Datenbank {
     
     /**
      * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern
-     * (UPSERT: UPdate oder INSERT).
+     * (UPSERT: UPdate oder inSERT).
      * 
      * @param nutzername Name des Nutzers, für den {@code text} als Tagebucheintrag gespeichert 
      *                   werden soll
      *
-     * @param text Text für neuen oder geänderten Tagebucheintrag.
+     * @param text Text für neuen oder geänderten Tagebucheintrag
      *
      * @return {@code true} bei Erfolg (es wurde ein Datensatz geändert), sonst {@code false}
      */
     public boolean upsertEintrag( String nutzername, String text ) {
-
-        final String preparedStatement =
-                """
-                    MERGE INTO tagebucheintrag AS t
-                    USING (
-                        SELECT id AS nutzer_id FROM nutzer WHERE nutzername = :nutzername
-                    ) AS n
-                    ON t.nutzer_id = n.nutzer_id AND t.datum = CURRENT_DATE
-                    WHEN MATCHED THEN UPDATE SET eintrag = :eintrag
-                    WHEN NOT MATCHED THEN INSERT (nutzer_id, datum, eintrag) VALUES (n.nutzer_id, CURRENT_DATE, :eintrag);
-                 """;        
-        
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue( "nutzername", nutzername );
-        params.addValue( "eintrag"   , text       );        
         
         try {
-
-            final int anzZeilenBetroffen = _namedParamJdbcTemplate.update(preparedStatement, params);
+        
+            final Resource resource = _resourceLoader.getResource("classpath:sql/UpsertTagebucheintrag.sql"); // Unterordner "sql" unter src/main/resources
+            final String preparedStatement = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
+                   
+            final MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue( "nutzername", nutzername );
+            params.addValue( "eintrag"   , text       );        
+                
+            final int anzZeilenBetroffen = _namedParamJdbcTemplate.update( preparedStatement, params );
             return anzZeilenBetroffen > 0;
+        }
+        catch ( IOException ex ) {
+
+            LOG.error( "Prepared Statement für UPSERT von Tagebucheintrag konnte nicht geladen werden.", ex);  
+            return false;
         }
         catch ( DataAccessException ex ) {
          
