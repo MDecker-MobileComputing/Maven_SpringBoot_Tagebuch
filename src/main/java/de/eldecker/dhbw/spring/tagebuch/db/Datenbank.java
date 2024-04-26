@@ -202,7 +202,7 @@ public class Datenbank {
 
         try {
 
-            TagebuchEintrag eintrag =
+            final TagebuchEintrag eintrag =
                     _namedParamJdbcTemplate.queryForObject( _preparedStatementGetTagebuchEintrag,
                                                             params,
                                                             _eintragDataClassRowMapper
@@ -225,13 +225,14 @@ public class Datenbank {
 
     
     /**
-     * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern. 
+     * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern
+     * (UPSERT: UPdate oder INSERT).
      * 
-     * @param nutzername Name des Nutzers
+     * @param nutzername Name des Nutzers, für den Tagebucheintrag gespeichert werden soll
      *
      * @param text Text für neuen oder geänderten Tagebucheintrag.
      *
-     * @return {@code true} bei Erfolg (es wurde ein Datensatz geändert), sonst {@code false}.
+     * @return {@code true} bei Erfolg (es wurde ein Datensatz geändert), sonst {@code false}
      */
     public boolean upsertEintrag( String nutzername, String text ) {
 
