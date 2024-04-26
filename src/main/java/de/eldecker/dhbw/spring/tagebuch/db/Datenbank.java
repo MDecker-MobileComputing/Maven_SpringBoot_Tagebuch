@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import de.eldecker.dhbw.spring.tagebuch.helferlein.RessourcenDateiLader;
 import de.eldecker.dhbw.spring.tagebuch.model.Nutzer;
 import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 
@@ -69,9 +70,6 @@ public class Datenbank {
      */
     private final DataClassRowMapper<TagebuchEintrag> _eintragDataClassRowMapper;
 
-
-    @Autowired
-    private ResourceLoader _resourceLoader;
     
     /**
      * Prepared Statement (SQL) einlesen, welches in der Datei 
@@ -79,6 +77,9 @@ public class Datenbank {
      */
     @Value("${de.eldecker.tagebuch.preparedStatement.getTagebuchEintrag}")
     private String _preparedStatementGetTagebuchEintrag;
+    
+    /** Hilfs-Bean zum Laden von SQL-Dateien mit <i>Prepared Statements</i>. */
+    private final RessourcenDateiLader _ressourcenDateiLader;
 
     
     /**
@@ -89,7 +90,7 @@ public class Datenbank {
     public Datenbank( JdbcTemplate jdbcTemplate,
                       NutzerRowMapper nutzerRowMapper,
                       NamedParameterJdbcTemplate namedParamJdbcTemplate,
-                      ResourceLoader resourceLoader
+                      RessourcenDateiLader ressourcenDateiLader
                     ) {
 
         _jdbcTemplate           = jdbcTemplate;
@@ -98,7 +99,7 @@ public class Datenbank {
         _namedParamJdbcTemplate    = namedParamJdbcTemplate;
         _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
         
-        _resourceLoader = resourceLoader;
+        _ressourcenDateiLader = ressourcenDateiLader;
     }
 
 
@@ -236,8 +237,11 @@ public class Datenbank {
 
     
     /**
-     * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern
-     * (UPSERT: UPdate oder inSERT).
+     * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern (UPSERT: UPdate oder inSERT). 
+     * <br><br>
+     * 
+     * Das <i>Prepared Statement</p> für den Datenbankzugriff wird aus einer Ressourcendatei 
+     * geladen.
      * 
      * @param nutzername Name des Nutzers, für den {@code text} als Tagebucheintrag gespeichert 
      *                   werden soll
@@ -248,22 +252,24 @@ public class Datenbank {
      */
     public boolean upsertEintrag( String nutzername, String text ) {
         
-        try {
+        final Optional<String> stringOptional = _ressourcenDateiLader.ladeRessourcenDatei( "sql/UpsertTagebucheintrag.sql" );
+        if ( stringOptional.isEmpty() ) {
+            
+            LOG.error( "Prepared Statement für UPSERT konnte nicht aus Ressourcendatei geladen werden." );
+            return false;
+        }
         
-            final Resource resource = _resourceLoader.getResource("classpath:sql/UpsertTagebucheintrag.sql"); // Unterordner "sql" unter src/main/resources
-            final String preparedStatement = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
-                   
-            final MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue( "nutzername", nutzername );
-            params.addValue( "eintrag"   , text       );        
+        final String preparedStatement = stringOptional.get();
+        
+        // Werte für Platzhalter in Prepared Statement definieren 
+        final MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue( "nutzername", nutzername );
+        params.addValue( "eintrag"   , text       );        
                 
+        try {
+                                           
             final int anzZeilenBetroffen = _namedParamJdbcTemplate.update( preparedStatement, params );
             return anzZeilenBetroffen > 0;
-        }
-        catch ( IOException ex ) {
-
-            LOG.error( "Prepared Statement für UPSERT von Tagebucheintrag konnte nicht geladen werden.", ex);  
-            return false;
         }
         catch ( DataAccessException ex ) {
          
