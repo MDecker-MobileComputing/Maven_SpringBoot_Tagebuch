@@ -1,6 +1,7 @@
 package de.eldecker.dhbw.spring.tagebuch.db;
 
 import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
 
 import java.util.List;
 import java.util.Optional;
@@ -212,13 +213,13 @@ public class Datenbank {
 
             LOG.warn( "Interner Fehler: Kein Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\" gefunden.",
                       nutzername, datum );
-            return Optional.empty();
+            return empty();
         }
         catch (DataAccessException ex) {
 
             LOG.error( "Fehler beim Auslesen von Tagebucheintrag für Nutzer \"{}\" und Datum \"{}\": " + ex,
                        nutzername, datum );
-            return Optional.empty();
+            return empty();
         }
     }
 
