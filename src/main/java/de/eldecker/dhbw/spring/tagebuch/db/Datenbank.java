@@ -39,7 +39,7 @@ public class Datenbank {
 
     /**
      * Bean, mit der man benamte Platzhalter in prepared SQL-Statements verwenden
-     * kann (z.B. {@code :nutzerid}.
+     * kann (z.B. {@code :nutzerid}).
      */
     private final NamedParameterJdbcTemplate _namedParamJdbcTemplate;
 
@@ -50,14 +50,14 @@ public class Datenbank {
     private final NutzerRowMapper _nutzerRowMapper;
 
     /**
-     * Objekt, das automatisch eine Ergebniszeile der DB-Anfrage auf 
+     * Objekt, das automatisch eine Ergebniszeile der DB-Anfrage auf
      * ein Objekt der Record-Klasse {@link TagebuchEintrag} abbildet.
      * <br><br>
      * ACHTUNG: die Ergebniszeile muss für jedes Attribut der
      * Record-Klasse eine gleichnamige Spalte haben (Spalte kann
      * mit {@code AS} in SQL umbenannt werden).
      * <br><br>
-     * Es gibt auch noch die Klasse {@code BeanPropertyRowMapper}, 
+     * Es gibt auch noch die Klasse {@code BeanPropertyRowMapper},
      * aber dieses funktioniert nicht mit Record-Klassen.
      */
     private final DataClassRowMapper<TagebuchEintrag> _eintragDataClassRowMapper;
@@ -123,22 +123,23 @@ public class Datenbank {
      *         Es wird auch das Feld {@code link} gesetzt, das den Link zur
      *         Detailansicht des Eintrags enthält.
      */
-    public List<TagebuchEintrag> getAlleTagebuchEintraege(String nutzername) {
+    public List<TagebuchEintrag> getAlleTagebuchEintraege( String nutzername ) {
 
         final String preparedStatement =
                 """
-                    SELECT t.id,
-                           FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
-                           CASE
-                               WHEN CHAR_LENGTH(eintrag) > 99
-                                    THEN CONCAT(SUBSTRING(eintrag, 1, 99), '...')
-                                    ELSE eintrag
-                           END AS text,
-                           CONCAT('eintrag/', FORMATDATETIME(t.datum, 'yyyy-MM-dd')) AS link
-                        FROM tagebucheintrag t, nutzer n
-                        WHERE t.nutzer_id = n.id
-                          AND n.nutzername = ?
-                        ORDER BY t.datum DESC
+                --- Kommentar
+                SELECT t.id,
+                       FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
+                       CASE
+                           WHEN CHAR_LENGTH(eintrag) > 99
+                                THEN CONCAT(SUBSTRING(eintrag, 1, 99), '...')
+                                ELSE eintrag
+                       END AS text,
+                       CONCAT('eintrag/', FORMATDATETIME(t.datum, 'yyyy-MM-dd')) AS link
+                    FROM tagebucheintrag t, nutzer n
+                    WHERE t.nutzer_id = n.id
+                      AND n.nutzername = ?
+                    ORDER BY t.datum DESC
                  """;
         try {
 
@@ -178,18 +179,18 @@ public class Datenbank {
      *         zur Detailansicht des Eintrags nicht benötigt wird, der Nutzer hat die
     *          Detailansicht ja bereits aufgerufen).
      */
-    public Optional<TagebuchEintrag> getTagebuchEintrag(String nutzername, String datum) {
+    public Optional<TagebuchEintrag> getTagebuchEintrag( String nutzername, String datum ) {
 
         final String preparedStatement =
                 """
-                    SELECT t.id,
-                           FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
-                           eintrag as text,
-                           '' AS link
-                        FROM tagebucheintrag t, nutzer n
-                        WHERE t.nutzer_id = n.id
-                          AND n.nutzername = :nutzername
-                          AND t.datum      = :datum
+                SELECT t.id,
+                       FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
+                       eintrag as text,
+                       '' AS link
+                    FROM tagebucheintrag t, nutzer n
+                    WHERE t.nutzer_id = n.id
+                      AND n.nutzername = :nutzername
+                      AND t.datum      = :datum
                 """;
 
         final MapSqlParameterSource params = new MapSqlParameterSource();
@@ -217,6 +218,21 @@ public class Datenbank {
                        nutzername, datum );
             return Optional.empty();
         }
+    }
+
+    
+    /**
+     * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern. 
+     * 
+     * @param nutzername Name des Nutzers
+     *
+     * @param text Text für neuen oder geänderten Tagebucheintrag.
+     *
+     * @return {@code true} bei Erfolg (es wurde ein Datensatz geändert), sonst {@code false}.
+     */
+    public boolean upsertEintrag( String nutzername, String text ) {
+
+        return false; 
     }
 
 }
