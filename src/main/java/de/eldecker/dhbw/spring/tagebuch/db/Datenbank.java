@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.DataClassRowMapper;
@@ -64,6 +65,14 @@ public class Datenbank {
 
 
     /**
+     * Prepared Statement (SQL) einlesen, welches in der Datei 
+     * {@code PreparedStatements.properties} definiert wurde.
+     */
+    @Value("${de.eldecker.tagebuch.preparedStatement.getTagebuchEintrag}")
+    private String _preparedStatementGetTagebuchEintrag;
+
+    
+    /**
      * Konstruktor für <i>Dependency Injection</i> und Erzeugung der
      * {@code DataClassRowMapper}-Instanz.
      */
@@ -75,8 +84,8 @@ public class Datenbank {
 
         _jdbcTemplate           = jdbcTemplate;
         _nutzerRowMapper        = nutzerRowMapper;
-        _namedParamJdbcTemplate = namedParamJdbcTemplate;
-
+        
+        _namedParamJdbcTemplate    = namedParamJdbcTemplate;
         _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
     }
 
@@ -127,7 +136,6 @@ public class Datenbank {
 
         final String preparedStatement =
                 """
-                --- Kommentar
                 SELECT t.id,
                        FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
                        CASE
@@ -168,8 +176,14 @@ public class Datenbank {
      * Die Methode sollte nur aufgerufen werden, wenn man sicher ist, dass es den
      * Tagebucheintrag tatsächlich gibt (weil er etwa von der Methode
      * {@link #getAlleTagebuchEintraege(String)} zurückgeliefert wurde).
+     * <br><br>
+     * 
+     * Das zugehörige <i>Prepared Statement</i> wird aus einer Properties-Datei
+     * eingelesen; dadurch wird vermieden, Java- und SQL-Code in einer Datei zu
+     * vermischen.
      *
-     * @param nutzername Name des Nutzers, für den der Einträge ausgelesen werden soll
+     * @param nutzername Name des Nutzers, für den der Eintrag für das angegebene
+     *                   Datum ausgelesen werden soll.
      *
      * @param datum Datum im Format {@code YYYY-MM-DD}
      *
@@ -181,18 +195,6 @@ public class Datenbank {
      */
     public Optional<TagebuchEintrag> getTagebuchEintrag( String nutzername, String datum ) {
 
-        final String preparedStatement =
-                """
-                SELECT t.id,
-                       FORMATDATETIME(t.datum, 'dd.MM.yyyy (E)') AS datum,
-                       eintrag as text,
-                       '' AS link
-                    FROM tagebucheintrag t, nutzer n
-                    WHERE t.nutzer_id = n.id
-                      AND n.nutzername = :nutzername
-                      AND t.datum      = :datum
-                """;
-
         final MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue( "nutzername", nutzername );
         params.addValue( "datum"     , datum      );
@@ -200,7 +202,7 @@ public class Datenbank {
         try {
 
             TagebuchEintrag eintrag =
-                    _namedParamJdbcTemplate.queryForObject( preparedStatement,
+                    _namedParamJdbcTemplate.queryForObject( _preparedStatementGetTagebuchEintrag,
                                                             params,
                                                             _eintragDataClassRowMapper
                                                           );
