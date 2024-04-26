@@ -228,7 +228,8 @@ public class Datenbank {
      * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern
      * (UPSERT: UPdate oder INSERT).
      * 
-     * @param nutzername Name des Nutzers, für den Tagebucheintrag gespeichert werden soll
+     * @param nutzername Name des Nutzers, für den {@code text} als Tagebucheintrag gespeichert 
+     *                   werden soll
      *
      * @param text Text für neuen oder geänderten Tagebucheintrag.
      *
@@ -236,7 +237,32 @@ public class Datenbank {
      */
     public boolean upsertEintrag( String nutzername, String text ) {
 
-        return false; 
+        final String preparedStatement =
+                """
+                    MERGE INTO tagebucheintrag AS t
+                    USING (
+                        SELECT id AS nutzer_id FROM nutzer WHERE nutzername = :nutzername
+                    ) AS n
+                    ON t.nutzer_id = n.nutzer_id AND t.datum = CURRENT_DATE
+                    WHEN MATCHED THEN UPDATE SET eintrag = :eintrag
+                    WHEN NOT MATCHED THEN INSERT (nutzer_id, datum, eintrag) VALUES (n.nutzer_id, CURRENT_DATE, :eintrag);
+                 """;        
+        
+        final MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue( "nutzername", nutzername );
+        params.addValue( "eintrag"   , text       );        
+        
+        try {
+
+            final int anzZeilenBetroffen = _namedParamJdbcTemplate.update(preparedStatement, params);
+            return anzZeilenBetroffen > 0;
+        }
+        catch ( DataAccessException ex ) {
+         
+            LOG.error( "Fehler bei UPSERT von aktuellem Tagebucheintrag für Nutzer \"{}\".", 
+                       nutzername, ex ); 
+            return false;
+        }        
     }
 
 }

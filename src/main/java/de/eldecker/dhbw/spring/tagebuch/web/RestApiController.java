@@ -71,9 +71,13 @@ public class RestApiController {
             
             nutzername = authentication.getName(); 
         }                
+        
+        textEintrag = textEintrag.trim();
                 
         LOG.info( "REST-Endpunkt /eintrag aufgerufen von Nutzer \"{}\" mit folgendem Eintragstext: {}", 
                   nutzername, textEintrag );
+        
+        _datenbank.upsertEintrag( nutzername, textEintrag );
         
         return new ResponseEntity<>( "Tagebucheintrag auf DB gespeichert", CREATED );
     }
