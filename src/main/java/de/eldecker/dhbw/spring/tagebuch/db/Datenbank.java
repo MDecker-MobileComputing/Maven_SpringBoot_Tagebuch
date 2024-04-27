@@ -240,6 +240,7 @@ public class Datenbank {
         }
     }
 
+
     /**
      * Einzelnen Tagebucheintrag für {@code nutzername} und heutiges Datum auslesen.
      *
@@ -274,7 +275,8 @@ public class Datenbank {
      */
     public boolean upsertEintrag( String nutzername, String text ) {
 
-        final Optional<String> stringOptional = _ressourcenDateiLader.ladeRessourcenDatei( "sql/UpsertTagebucheintrag.sql" );
+        final Optional<String> stringOptional =
+                                  _ressourcenDateiLader.ladeRessourcenDatei( "sql/UpsertTagebucheintrag.sql" );
         if ( stringOptional.isEmpty() ) {
 
             LOG.error( "Prepared Statement für UPSERT konnte nicht aus Ressourcendatei geladen werden." );
