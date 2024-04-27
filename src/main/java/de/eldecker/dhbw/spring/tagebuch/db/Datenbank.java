@@ -70,18 +70,18 @@ public class Datenbank {
      */
     private final DataClassRowMapper<TagebuchEintrag> _eintragDataClassRowMapper;
 
-    
+
     /**
-     * Prepared Statement (SQL) einlesen, welches in der Datei 
+     * Prepared Statement (SQL) einlesen, welches in der Datei
      * {@code PreparedStatements.properties} definiert wurde.
      */
     @Value("${de.eldecker.tagebuch.preparedStatement.getTagebuchEintrag}")
     private String _preparedStatementGetTagebuchEintrag;
-    
+
     /** Hilfs-Bean zum Laden von SQL-Dateien mit <i>Prepared Statements</i>. */
     private final RessourcenDateiLader _ressourcenDateiLader;
 
-    
+
     /**
      * Konstruktor für <i>Dependency Injection</i> und Erzeugung der
      * {@code DataClassRowMapper}-Instanz.
@@ -95,10 +95,10 @@ public class Datenbank {
 
         _jdbcTemplate           = jdbcTemplate;
         _nutzerRowMapper        = nutzerRowMapper;
-        
+
         _namedParamJdbcTemplate    = namedParamJdbcTemplate;
         _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
-        
+
         _ressourcenDateiLader = ressourcenDateiLader;
     }
 
@@ -190,7 +190,7 @@ public class Datenbank {
      * Tagebucheintrag tatsächlich gibt (weil er etwa von der Methode
      * {@link #getAlleTagebuchEintraege(String)} zurückgeliefert wurde).
      * <br><br>
-     * 
+     *
      * Das zugehörige <i>Prepared Statement</i> wird aus einer Properties-Datei
      * eingelesen; dadurch wird vermieden, Java- und SQL-Code in einer Datei zu
      * vermischen.
@@ -235,15 +235,15 @@ public class Datenbank {
         }
     }
 
-    
+
     /**
-     * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern (UPSERT: UPdate oder inSERT). 
+     * Tagebucheintrag für Nutzer und aktuellen Tag anlegen und ändern (UPSERT: UPdate oder inSERT).
      * <br><br>
-     * 
-     * Das <i>Prepared Statement</p> für den Datenbankzugriff wird aus einer Ressourcendatei 
+     *
+     * Das <i>Prepared Statement</i> für den Datenbankzugriff wird aus einer Ressourcendatei
      * geladen.
-     * 
-     * @param nutzername Name des Nutzers, für den {@code text} als Tagebucheintrag gespeichert 
+     *
+     * @param nutzername Name des Nutzers, für den {@code text} als Tagebucheintrag gespeichert
      *                   werden soll
      *
      * @param text Text für neuen oder geänderten Tagebucheintrag
@@ -251,32 +251,32 @@ public class Datenbank {
      * @return {@code true} bei Erfolg (es wurde ein Datensatz geändert), sonst {@code false}
      */
     public boolean upsertEintrag( String nutzername, String text ) {
-        
+
         final Optional<String> stringOptional = _ressourcenDateiLader.ladeRessourcenDatei( "sql/UpsertTagebucheintrag.sql" );
         if ( stringOptional.isEmpty() ) {
-            
+
             LOG.error( "Prepared Statement für UPSERT konnte nicht aus Ressourcendatei geladen werden." );
             return false;
         }
-        
+
         final String preparedStatement = stringOptional.get();
-        
-        // Werte für Platzhalter in Prepared Statement definieren 
+
+        // Werte für Platzhalter in Prepared Statement definieren
         final MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue( "nutzername", nutzername );
-        params.addValue( "eintrag"   , text       );        
-                
+        params.addValue( "eintrag"   , text       );
+
         try {
-                                           
+
             final int anzZeilenBetroffen = _namedParamJdbcTemplate.update( preparedStatement, params );
             return anzZeilenBetroffen > 0;
         }
         catch ( DataAccessException ex ) {
-         
-            LOG.error( "Fehler bei UPSERT von aktuellem Tagebucheintrag für Nutzer \"{}\".", 
-                       nutzername, ex ); 
+
+            LOG.error( "Fehler bei UPSERT von aktuellem Tagebucheintrag für Nutzer \"{}\".",
+                       nutzername, ex );
             return false;
-        }        
+        }
     }
 
 }
