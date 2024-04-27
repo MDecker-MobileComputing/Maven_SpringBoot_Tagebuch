@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import de.eldecker.dhbw.spring.tagebuch.helferlein.HeuteEintragChecker;
 import de.eldecker.dhbw.spring.tagebuch.helferlein.RessourcenDateiLader;
 import de.eldecker.dhbw.spring.tagebuch.model.Nutzer;
 import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
@@ -81,16 +82,19 @@ public class Datenbank {
     /** Hilfs-Bean zum Laden von SQL-Dateien mit <i>Prepared Statements</i>. */
     private final RessourcenDateiLader _ressourcenDateiLader;
 
+    private final HeuteEintragChecker _heuteEintragChecker;
+
 
     /**
      * Konstruktor für <i>Dependency Injection</i> und Erzeugung der
      * {@code DataClassRowMapper}-Instanz.
      */
     @Autowired
-    public Datenbank( JdbcTemplate jdbcTemplate,
-                      NutzerRowMapper nutzerRowMapper,
+    public Datenbank( JdbcTemplate               jdbcTemplate,
+                      NutzerRowMapper            nutzerRowMapper,
                       NamedParameterJdbcTemplate namedParamJdbcTemplate,
-                      RessourcenDateiLader ressourcenDateiLader
+                      RessourcenDateiLader       ressourcenDateiLader,
+                      HeuteEintragChecker        heuteEintragChecker
                     ) {
 
         _jdbcTemplate           = jdbcTemplate;
@@ -100,6 +104,7 @@ public class Datenbank {
         _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
 
         _ressourcenDateiLader = ressourcenDateiLader;
+        _heuteEintragChecker  = heuteEintragChecker;
     }
 
 
@@ -233,6 +238,23 @@ public class Datenbank {
                        nutzername, datum );
             return empty();
         }
+    }
+
+    /**
+     * Einzelnen Tagebucheintrag für {@code nutzername} und heutiges Datum auslesen.
+     *
+     * @param nutzername Name des Nutzers, für den der Eintrag für das heutige
+     *                   Datum ausgelesen werden soll.
+     *
+     * @return Optional enthält den gewünschten Tagebucheintrag für {@code nutzername}
+     *         und heutiges Datum oder ist leer, wenn es diesen Tagebucheintrag nicht
+     *         gibt.
+     */
+    public Optional<TagebuchEintrag> getTagebuchEintragHeute( String nutzername ) {
+
+        final String heuteDatum = _heuteEintragChecker.getHeuteDatumDatenbankString();
+
+        return getTagebuchEintrag( nutzername, heuteDatum );
     }
 
 
