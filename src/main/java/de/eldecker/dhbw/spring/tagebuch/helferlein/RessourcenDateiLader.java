@@ -61,6 +61,8 @@ public class RessourcenDateiLader {
             
             final String string = new String( byteArray, UTF_8 );
             
+            LOG.debug( "Ressourcen-Datei \"{}\" erfolgreich eingelesen.", path );
+            
             return Optional.of( string  );            
         }
         catch (IOException ex) {
