@@ -47,3 +47,7 @@ textarea {
 .abstand_unten {
     margin-bottom: 2em;
 }
+
+.schrift_klein {
+    font-size: 0.5em;
+}

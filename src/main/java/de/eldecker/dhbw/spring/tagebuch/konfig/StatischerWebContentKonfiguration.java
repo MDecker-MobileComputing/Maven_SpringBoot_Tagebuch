@@ -12,7 +12,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * {@code src/main/resources/public } zurückliefert.  
  */
 @Configuration
-public class StatischWebContentKonfiguration {
+public class StatischerWebContentKonfiguration {
 
     /**
      * Konfiguration für Auslieferung statische Dateien mit Endung {@code .js} und {@code .css},
@@ -36,10 +36,10 @@ public class StatischWebContentKonfiguration {
         encodingFilter.setEncoding( "UTF-8" );
         encodingFilter.setForceEncoding( true );
         
-        final FilterRegistrationBean<CharacterEncodingFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter( encodingFilter );
-        registrationBean.addUrlPatterns( "*.js", "*.css" );
+        final FilterRegistrationBean<CharacterEncodingFilter> filterBean = new FilterRegistrationBean<>();                                                                 
+        filterBean.setFilter( encodingFilter );
+        filterBean.addUrlPatterns( "*.js", "*.css" );
         
-        return registrationBean;
+        return filterBean;
     }
 }

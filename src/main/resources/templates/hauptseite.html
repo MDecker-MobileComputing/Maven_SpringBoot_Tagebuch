@@ -8,7 +8,11 @@
 </head>
 <body>
 
-  <h1>Tagebuch von <span th:text="${nutzername}"></span></h1>
+  <h1>
+    Tagebuch von <span th:text="${nutzername}"></span>
+    <span class="schrift_klein">(<a href="/logout">Logout</a>)</span>
+  </h1>
+
 
   <p class="meldung" th:if="${meldung != null}">
     <span th:text="${meldung}"></span>
