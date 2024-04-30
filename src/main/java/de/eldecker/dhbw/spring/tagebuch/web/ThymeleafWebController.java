@@ -31,7 +31,6 @@ public class ThymeleafWebController {
     /**
      * Name (ohne Datei-Endung) für Template "hauptseite" (Liste aller Einträge für einen Nutzer),
      * wird im Ordner {@code src/main/resources/templates/} gesucht.
-     *
      */
     private static final String TEMPLATE_HAUPTSEITE = "hauptseite";
 
@@ -227,7 +226,6 @@ public class ThymeleafWebController {
         } else {
 
         }
-
 
         return "neu_aendern";
     }
