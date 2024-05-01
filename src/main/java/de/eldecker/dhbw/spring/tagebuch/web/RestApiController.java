@@ -53,32 +53,31 @@ public class RestApiController {
      * @param authentication Objekt, von dem der aktuell angemeldete Nutzer abgefragt wird;
      *                       damit dies auch für einen REST-Call muss im entsprechenden
      *                       JavaScript-Code die Session-ID aus dem Cookie {@code JSESSIONID}
-     *                       ausgelesen und in the Request-Header kopiert werden; hierzu 
+     *                       ausgelesen und in the Request-Header kopiert werden; hierzu
      *                       muss auch konfiguriert sein, dass die {@code JSESSIONID} als
      *                       Cookie von Spring Boot an den Browser geschickt wird, siehe
      *                       Methode {@code filterKetteFuerBeschraenktePfade} in Klasse
      *                       {@link BasicAuthenticationKonfiguration}.
-     *                       
-     * @return Im Erfolgsfall wird HTTP-Status-Code 201 (Created) mit einer 
-     *         Erfolgsnachricht zurückgegeben.
+     *
+     * @return Im Erfolgsfall wird HTTP-Status-Code 201 (Created) mit einer Erfolgsnachricht
+     *         zurückgegeben.
      */
     @PostMapping( "/eintrag" )
-    public ResponseEntity<String> eintragNeuAendern( @RequestBody String textEintrag, 
-                                                     Authentication authentication ) { 
-                                                     
+    public ResponseEntity<String> eintragNeuAendern( @RequestBody String textEintrag,
+                                                     Authentication authentication ) {
         String nutzername = "???";
         if (authentication != null) {
-            
-            nutzername = authentication.getName(); 
-        }                
-        
+
+            nutzername = authentication.getName();
+        }
+
         textEintrag = textEintrag.trim();
-                
-        LOG.info( "REST-Endpunkt /eintrag aufgerufen von Nutzer \"{}\" mit folgendem Eintragstext: {}", 
+
+        LOG.info( "REST-Endpunkt /eintrag aufgerufen von Nutzer \"{}\" mit folgendem Eintragstext: {}",
                   nutzername, textEintrag );
-        
+
         _datenbank.upsertEintrag( nutzername, textEintrag );
-        
+
         return new ResponseEntity<>( "Tagebucheintrag auf DB gespeichert", CREATED );
     }
 
