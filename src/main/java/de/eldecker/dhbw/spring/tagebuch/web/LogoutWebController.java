@@ -1,7 +1,5 @@
 package de.eldecker.dhbw.spring.tagebuch.web;
 
-import java.util.Enumeration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContext;
@@ -62,11 +60,12 @@ public class LogoutWebController {
                             
             if (sessionAttribut instanceof SecurityContext sc) {
 
-                LOG.info( "Nutzer, dessen Session gleich invalidiert wird: " + sc.getAuthentication().getName() );                    
+                final String nutzerName = sc.getAuthentication().getName();
+                LOG.info( "Nutzer, dessen Session gleich invalidiert wird: {}", nutzerName );                    
                 
             } else {
                 
-                LOG.warn( "Attribut SPRING_SECURITY_CONTEXT in Session ist kein SecurityContext sondern {}.",
+                LOG.warn( "SPRING_SECURITY_CONTEXT in Session ist kein SecurityContext sondern {}.",
                           sessionAttribut.getClass() );
             }
             
