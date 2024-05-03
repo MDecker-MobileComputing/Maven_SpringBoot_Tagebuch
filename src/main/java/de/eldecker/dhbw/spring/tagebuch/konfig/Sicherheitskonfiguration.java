@@ -65,7 +65,11 @@ public class Sicherheitskonfiguration {
     public SecurityFilterChain httpKonfiguration(HttpSecurity http) throws Exception {
         
         return http.csrf( (csrf) -> csrf.disable() )
-                   .authorizeHttpRequests( auth -> auth.requestMatchers(antMatcher("/abgemeldet.html")).permitAll() 
+                   .authorizeHttpRequests( auth -> auth.requestMatchers( antMatcher( "/abgemeldet.html" ), 
+                                                                         antMatcher( "/h2-console/**"   ),
+                                                                         antMatcher( "/styles.css"      ),
+                                                                         antMatcher( "/index.html"      )
+                                                                        ).permitAll() 
                                                        .anyRequest().authenticated() )
                    .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true ) )       
                    .logout(logout -> logout
