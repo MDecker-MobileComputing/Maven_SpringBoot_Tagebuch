@@ -29,13 +29,16 @@ public class PdfExportService {
         
             final Document document = new Document();
             PdfWriter.getInstance( document, bos );
-        
+                                
             document.open();
-            document.add( new Paragraph("Tagebuchexport für " + nutzerName + " (" + new Date() + ")" ) );
+            final String demoText = "Tagebuchexport für " + nutzerName + " (" + new Date() + ")";
+            document.add( new Paragraph( demoText ) );
             document.close();
         
             bos.flush();
             bos.close();
+            
+            LOG.info( "PDF für Nutzer \"{}\" erzeugt.", nutzerName );
         
             return baos;            
         }
