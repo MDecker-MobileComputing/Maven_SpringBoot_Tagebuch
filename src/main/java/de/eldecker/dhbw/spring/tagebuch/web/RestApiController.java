@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
 import de.eldecker.dhbw.spring.tagebuch.konfig.Sicherheitskonfiguration;
-import jakarta.servlet.http.HttpServletRequest;
-
 
 
 /**
@@ -78,7 +75,7 @@ public class RestApiController {
 
         _datenbank.upsertEintrag( nutzername, textEintrag );
 
-        return new ResponseEntity<>( "Tagebucheintrag auf DB gespeichert", CREATED );
+        return new ResponseEntity<>( "Tagebucheintrag auf DB gespeichert", CREATED ); // HTTP-Status-Code 201
     }
 
 }
