@@ -1,6 +1,8 @@
 package de.eldecker.dhbw.spring.tagebuch.web;
 
+import static org.springframework.http.MediaType.APPLICATION_PDF;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,13 +40,20 @@ public class PdfExportRestController {
     @GetMapping(value = "/generatePDF", produces = APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePDF() throws PdfExportException {
         
-        ByteArrayOutputStream pdfStream = _pdfExportService.generatePdf("alice"); // throws PdfExportException
-        ByteArrayInputStream pdfInputStream = new ByteArrayInputStream(pdfStream.toByteArray());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=generated.pdf");
+        String nutzerName = "alice";
+        
+        final ByteArrayOutputStream pdfStream           = _pdfExportService.generatePdf( nutzerName ); // throws PdfExportException
+        final ByteArrayInputStream  pdfInputStream      = new ByteArrayInputStream( pdfStream.toByteArray() );
+        final InputStreamResource   inputStreamResource = new InputStreamResource( pdfInputStream );
+        
+        final String contentDispositionHeader = String.format( "attachment; filename=Tagebuch_%s.pdf", nutzerName );        
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add( CONTENT_DISPOSITION, contentDispositionHeader );
+        
         return ResponseEntity.ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(pdfInputStream));        
+                             .headers( headers )
+                             .contentType( APPLICATION_PDF )
+                             .body( inputStreamResource);        
     }
+    
 }

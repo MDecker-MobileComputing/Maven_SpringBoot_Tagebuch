@@ -3,6 +3,7 @@ package de.eldecker.dhbw.spring.tagebuch.logik;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class PdfExportService {
             PdfWriter.getInstance( document, bos );
         
             document.open();
-            document.add( new Paragraph("Tagebuchexport für " + nutzerName) );
+            document.add( new Paragraph("Tagebuchexport für " + nutzerName + " (" + new Date() + ")" ) );
             document.close();
         
             bos.flush();
