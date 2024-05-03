@@ -25,16 +25,7 @@ import de.eldecker.dhbw.spring.tagebuch.model.Nutzer;
 
 
 /**
- * Konfiguration von Web-Security: auf welche Pfade kann der Nutzer nur nach erfolgreicher
- * Konfiguration zugreifen?
- * <br><br>
- *
- * Quellen:
- * <ul>
- * <li>https://docs.spring.io/spring-security/reference/servlet/configuration/java.html#jc-httpsecurity</li>
- * <li>https://stackoverflow.com/a/73877921/1364368</li>
- * <li>https://www.baeldung.com/spring-boot-security-autoconfiguration#config</li>
- * </ul>
+ * Konfiguration von Web-Security: auf bestimmte Pfad soll man nur nach Authentifizierung zugreifen dürfen.
  */
 @Configuration
 @EnableWebSecurity
@@ -44,14 +35,13 @@ public class Sicherheitskonfiguration {
 
     /** Rolle, die jedem Nutzer zugefügt wird. */
     private static final String ROLLE_NUTZER = "nutzer";
-    
-    /** Array mit Pfaden, auf die auch ohne Authentifizierung zugegriffen werden kann. */ 
-    private final static AntPathRequestMatcher[] oeffentlichePfadeArray = { antMatcher( "/abgemeldet.html" ), 
-                                                                            antMatcher( "/h2-console/**"   ),
-                                                                            antMatcher( "/styles.css"      ),
-                                                                            antMatcher( "/index.html"      ) 
-                                                                          };    
 
+    /** Array mit Pfaden, auf die auch ohne Authentifizierung zugegriffen werden kann. */
+    private final static AntPathRequestMatcher[] oeffentlichePfadeArray = { antMatcher( "/index.html"      ),
+                                                                            antMatcher( "/abgemeldet.html" ),
+                                                                            antMatcher( "/h2-console/**"   ),
+                                                                            antMatcher( "/styles.css"      ) // wird von index.html und abgemeldet.html benötigt
+                                                                          };
     /** Repository-Bean für Zugriff auf Datenbank. */
     private Datenbank _datenbank;
 
@@ -65,31 +55,28 @@ public class Sicherheitskonfiguration {
         _datenbank = datenbank;
     }
 
-                                                                         
-            
-            
 
     /**
      * Konfiguration Sicherheit für HTTP.
      */
     @Bean
     public SecurityFilterChain httpKonfiguration(HttpSecurity http) throws Exception {
-        
+
         return http.csrf( (csrf) -> csrf.disable() )
-                   .authorizeHttpRequests( auth -> auth.requestMatchers( oeffentlichePfadeArray ).permitAll()                                                                         
+                   .authorizeHttpRequests( auth -> auth.requestMatchers( oeffentlichePfadeArray ).permitAll()
                                                        .anyRequest().authenticated() ) // alle anderen Pfade gehen nur mit Authentifizierung
-                   .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true ) )       
+                   .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true ) )
                    .logout(logout -> logout
                                            .logoutUrl( "/logout" ) // "/logout" ist Default
-                                           .logoutSuccessUrl("/abgemeldet.html") 
-                                           .invalidateHttpSession( true ) 
-                                           .deleteCookies( "JSESSIONID" ) 
-                       )                   
+                                           .logoutSuccessUrl("/abgemeldet.html")
+                                           .invalidateHttpSession( true )
+                                           .deleteCookies( "JSESSIONID" )
+                       )
                    .headers( headers -> headers.disable() ) // damit H2-Console funktioniert
                    .build();
     }
 
-    
+
     /**
      * Nutzernamen mit Passwörtern definieren (werden aus Datenbank geladen).
      *
