@@ -1,5 +1,6 @@
 package de.eldecker.dhbw.spring.tagebuch.konfig;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import static java.util.stream.Collectors.toList;
 
@@ -64,16 +65,18 @@ public class Sicherheitskonfiguration {
      * Konfiguration Sicherheit für HTTP.
      */
     @Bean
-    public SecurityFilterChain filterKetteFuerBeschraenktePfade(HttpSecurity http) throws Exception {
+    public SecurityFilterChain httpKonfiguration(HttpSecurity http) throws Exception {
         
         return http.csrf( (csrf) -> csrf.disable() )
-                   .authorizeHttpRequests(
-                        auth -> auth.requestMatchers( "/", "/h2-console/**", "/login-formular.html" ).permitAll()
-                                    .anyRequest().authenticated()
-                   )
-                   .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true )                        
-                                                     .permitAll()
-                   )
+                   .authorizeHttpRequests( auth -> auth.requestMatchers(antMatcher("/abgemeldet.html")).permitAll() 
+                                                       .anyRequest().authenticated() )
+                   .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true ) )       
+                   .logout(logout -> logout
+                                           .logoutUrl( "/logout" ) // "/logout" ist Default
+                                           .logoutSuccessUrl("/abgemeldet.html") 
+                                           .invalidateHttpSession( true ) 
+                                           .deleteCookies( "JSESSIONID" ) 
+                       )                   
                    .headers( headers -> headers.disable() ) // damit H2-Console funktioniert
                    .build();
     }
