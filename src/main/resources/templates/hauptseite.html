@@ -10,7 +10,7 @@
 
   <h1>
     Tagebuch von <span th:text="${nutzername}"></span>
-    <span class="schrift_klein">(<a href="/logout">Logout</a>)</span>
+    <span class="schrift_klein">( <a href="/logout">Logout</a> )</span>
   </h1>
 
 
@@ -20,6 +20,7 @@
 
   <p th:if="${tagebucheintrage.size() > 0}" class="abstand_unten">
     Anzahl Tagebucheinträge: <span th:text="${tagebucheintrage.size()}"></span>
+    ( <a href="/api/v1/generatePDF">PDF-Export</a> )
   </p>
 
   <!-- Link für neuen Eintrag anzeigen, wenn es noch keinen Eintrag für das heutige Datum gibt. -->
