@@ -1,11 +1,8 @@
 package de.eldecker.dhbw.spring.tagebuch.konfig;
 
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-
 import static java.util.stream.Collectors.toList;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.ALWAYS;
 import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import java.util.List;
 
