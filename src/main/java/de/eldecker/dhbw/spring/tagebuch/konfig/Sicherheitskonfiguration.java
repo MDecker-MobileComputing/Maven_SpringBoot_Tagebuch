@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
 import de.eldecker.dhbw.spring.tagebuch.model.Nutzer;
@@ -43,6 +44,13 @@ public class Sicherheitskonfiguration {
 
     /** Rolle, die jedem Nutzer zugefügt wird. */
     private static final String ROLLE_NUTZER = "nutzer";
+    
+    /** Array mit Pfaden, auf die auch ohne Authentifizierung zugegriffen werden kann. */ 
+    private final static AntPathRequestMatcher[] oeffentlichePfadeArray = { antMatcher( "/abgemeldet.html" ), 
+                                                                            antMatcher( "/h2-console/**"   ),
+                                                                            antMatcher( "/styles.css"      ),
+                                                                            antMatcher( "/index.html"      ) 
+                                                                          };    
 
     /** Repository-Bean für Zugriff auf Datenbank. */
     private Datenbank _datenbank;
@@ -57,6 +65,9 @@ public class Sicherheitskonfiguration {
         _datenbank = datenbank;
     }
 
+                                                                         
+            
+            
 
     /**
      * Konfiguration Sicherheit für HTTP.
@@ -65,12 +76,8 @@ public class Sicherheitskonfiguration {
     public SecurityFilterChain httpKonfiguration(HttpSecurity http) throws Exception {
         
         return http.csrf( (csrf) -> csrf.disable() )
-                   .authorizeHttpRequests( auth -> auth.requestMatchers( antMatcher( "/abgemeldet.html" ), 
-                                                                         antMatcher( "/h2-console/**"   ),
-                                                                         antMatcher( "/styles.css"      ),
-                                                                         antMatcher( "/index.html"      )
-                                                                        ).permitAll() 
-                                                       .anyRequest().authenticated() )
+                   .authorizeHttpRequests( auth -> auth.requestMatchers( oeffentlichePfadeArray ).permitAll()                                                                         
+                                                       .anyRequest().authenticated() ) // alle anderen Pfade gehen nur mit Authentifizierung
                    .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true ) )       
                    .logout(logout -> logout
                                            .logoutUrl( "/logout" ) // "/logout" ist Default
