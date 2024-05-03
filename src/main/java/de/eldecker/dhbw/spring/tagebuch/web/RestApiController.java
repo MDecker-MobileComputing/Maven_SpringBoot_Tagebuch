@@ -42,10 +42,9 @@ public class RestApiController {
 
 
     /**
-     * Neuen Eintrag (für heutigen Tag) für den angemeldeten Nutzer anlegen
-     * oder aktualisieren.
+     * Neuen Eintrag (für heutigen Tag) für den angemeldeten Nutzer anlegen oder aktualisieren. 
      *
-     * @param textEintrag Text von Tagebucheintrag
+     * @param textEintrag Text von Tagebucheintrag (erster oder neuer Text)
      *
      * @param authentication Objekt, von dem der aktuell angemeldete Nutzer abgefragt wird;
      *                       damit dies auch für einen REST-Call muss im entsprechenden
