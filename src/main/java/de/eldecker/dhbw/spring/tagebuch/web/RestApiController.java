@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
-import de.eldecker.dhbw.spring.tagebuch.konfig.BasicAuthenticationKonfiguration;
+import de.eldecker.dhbw.spring.tagebuch.konfig.Sicherheitskonfiguration;
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -57,7 +57,7 @@ public class RestApiController {
      *                       muss auch konfiguriert sein, dass die {@code JSESSIONID} als
      *                       Cookie von Spring Boot an den Browser geschickt wird, siehe
      *                       Methode {@code filterKetteFuerBeschraenktePfade} in Klasse
-     *                       {@link BasicAuthenticationKonfiguration}.
+     *                       {@link Sicherheitskonfiguration}.
      *
      * @return Im Erfolgsfall wird HTTP-Status-Code 201 (Created) mit einer Erfolgsnachricht
      *         zurückgegeben.
