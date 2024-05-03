@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -64,42 +65,25 @@ public class Sicherheitskonfiguration {
 
 
     /**
-     * Für Requests, deren Pfad mit {@code /app/} beginnt, muss sich der Nutzer 
-     * mit <b>Basic Authentication</i> authentifzieren (Nutzername und Passwort
-     * müssen in einen vom Browser angezeigten Dialog eingegeben werden). 
+     * Konfiguration Sicherheit für HTTP.
      */
     @Bean
-    @Order(1)
-    public SecurityFilterChain filterKetteFuerBeschraenktePfade( HttpSecurity http ) throws Exception {
-
-        return http.securityMatcher( "/app/**" )
-                   .authorizeHttpRequests(
-                        request -> request.anyRequest().authenticated()
-                   )
-                   .httpBasic( withDefaults() )                   
-                   .sessionManagement( session-> 
-                           session.sessionCreationPolicy( ALWAYS ) // JSESSIONID; in application.properties: server.servlet.session.cookie.http-only=false
-                                  .sessionFixation().newSession() )                                  
-                   .build();
-    }
-
-
-    /**
-     * Für sonstige Requests (weil {@code Order(2)}) wird keine Authentifizierung gefordert.
-     */
-    @Bean
-    @Order(2)
-    public SecurityFilterChain filterKetteFuerFreiePfade( HttpSecurity http ) throws Exception {
-
-        return http.securityMatcher( "/", "/h2-console/**", "/api/**" )
+    public SecurityFilterChain filterKetteFuerBeschraenktePfade(HttpSecurity http) throws Exception {
+        
+        return http.csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests(
-                     request -> request.anyRequest().permitAll()
+                        auth -> auth.requestMatchers( "/", "/h2-console/**", "/login-formular.html" ).permitAll()
+                                .anyRequest().authenticated()
                 )
-                .csrf( (csrf) -> csrf.disable() )                
+                .formLogin( formLogin -> formLogin
+                        .defaultSuccessUrl( "/app/hauptseite", true )
+                        .permitAll()
+                )
+                .headers( headers -> headers.disable() ) // damit H2-Console funktioniert
                 .build();
     }
 
-
+    
     /**
      * Nutzernamen mit Passwörtern definieren (werden aus Datenbank geladen).
      *
