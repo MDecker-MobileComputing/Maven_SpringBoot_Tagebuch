@@ -22,6 +22,7 @@ public class HeuteEintragChecker {
     /** Bean für Formatierung von Datum-/Uhrzeit-Strings */
     private final DatumsFormatierer _datumsFormatierer;
 
+
     /**
      * Konstruktor für <i>Dependency Injection</i>.
      */

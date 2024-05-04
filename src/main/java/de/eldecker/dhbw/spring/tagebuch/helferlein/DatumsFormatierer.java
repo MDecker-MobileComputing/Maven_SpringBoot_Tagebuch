@@ -1,6 +1,7 @@
 package de.eldecker.dhbw.spring.tagebuch.helferlein;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Component;
@@ -17,6 +18,9 @@ public class DatumsFormatierer {
 
     /** Datumsformatierer für Format {@code yyyy-MM-dd} (also für Datenbank), z.B. {@code 2024-04-23}. */
     private DateTimeFormatter _datumDatenbankFormatierer = DateTimeFormatter.ofPattern( "yyyy-MM-dd" );
+
+    /** Datumsformatierer für Format {@code yyyy-MM-dd_HH-mm} (also für Dateinamen), z.B. {@code 2024-04-23_12-34}. */
+    private DateTimeFormatter _datumZeitFuerDateiname = DateTimeFormatter.ofPattern( "yyyy-MM-dd_HH-mm" );
 
 
     /**
@@ -48,5 +52,17 @@ public class DatumsFormatierer {
     }
 
 
+    /**
+     * Gibt aktuelles Datum und Uhrzeit im Format {@code yyyy-MM-dd_HH-mm} zurück.
+     *
+     * @return Heutiges Datum und Uhrzeit im Format {@code yyyy-MM-dd_HH-mm}, z.B.
+     *         {@code 2024-04-23_12-34}
+     */
+    public String getHeuteDatumZeitFuerDateiname() {
+
+        final LocalDateTime jetzt = LocalDateTime.now();
+
+        return _datumZeitFuerDateiname.format( jetzt );
+    }
 
 }

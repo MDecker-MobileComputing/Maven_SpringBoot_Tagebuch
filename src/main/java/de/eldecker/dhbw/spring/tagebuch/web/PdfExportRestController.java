@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.eldecker.dhbw.spring.tagebuch.logik.PdfExportException;
 import de.eldecker.dhbw.spring.tagebuch.logik.PdfExportService;
+import de.eldecker.dhbw.spring.tagebuch.helferlein.DatumsFormatierer;
 
 
 /**
@@ -34,17 +35,22 @@ public class PdfExportRestController {
 
     private static Logger LOG = LoggerFactory.getLogger( PdfExportRestController.class );
 
-    /** Bean mit Logik für PDF-Erzeugung */
+    /** Bean mit Logik für PDF-Erzeugung. */
     private final PdfExportService _pdfExportService;
+
+    /** Bean für Formatierung von Datum-/Uhrzeit-Strings. */
+    private final DatumsFormatierer _datumsFormatierer;
 
 
     /**
      * Konstruktor für <i>Dependency Injection</i>.
      */
     @Autowired
-    public PdfExportRestController( PdfExportService pdfExportService ) {
+    public PdfExportRestController( PdfExportService pdfExportService,
+                                    DatumsFormatierer datumsFormatierer ) {
 
-        _pdfExportService = pdfExportService;
+        _pdfExportService  = pdfExportService;
+        _datumsFormatierer = datumsFormatierer;
     }
 
 
@@ -86,8 +92,7 @@ public class PdfExportRestController {
      */
     private HttpHeaders erzeugeHeader( String nutzerName ) {
 
-        final DateTimeFormatter datumsZeitFormatierer = DateTimeFormatter.ofPattern( "yyyy-MM-dd" );
-        final String datumZeitString = datumsZeitFormatierer.format( LocalDate.now() );
+        final String datumZeitString = _datumsFormatierer.getHeuteDatumZeitFuerDateiname();
 
         final String contentDispositionHeader = String.format( "attachment; filename=Tagebuch_%s_%s.pdf",
                                                                nutzerName, datumZeitString );
