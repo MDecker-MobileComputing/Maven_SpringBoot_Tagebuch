@@ -16,8 +16,8 @@ package de.eldecker.dhbw.spring.tagebuch.model;
  *             wenn das Objekt für eine Detailseite erzeugt wird, dann
  *             enthält dieses Feld einen leerer String.
  */
-public record TagebuchEintrag( int id,
-                               String text,
+public record TagebuchEintrag( int    id   ,
+                               String text ,
                                String datum,
                                String link
                              ) {

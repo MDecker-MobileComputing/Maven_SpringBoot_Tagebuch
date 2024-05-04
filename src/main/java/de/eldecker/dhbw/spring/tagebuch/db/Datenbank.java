@@ -58,10 +58,12 @@ public class Datenbank {
      * Objekt, das automatisch eine Ergebniszeile der DB-Anfrage auf
      * ein Objekt der Record-Klasse {@link TagebuchEintrag} abbildet.
      * <br><br>
+     *
      * ACHTUNG: die Ergebniszeile muss für jedes Attribut der
      * Record-Klasse eine gleichnamige Spalte haben (Spalte kann
      * mit {@code AS} in SQL umbenannt werden).
      * <br><br>
+     *
      * Es gibt auch noch die Klasse {@code BeanPropertyRowMapper},
      * aber dieses funktioniert nicht mit Record-Klassen.
      */
@@ -100,13 +102,12 @@ public class Datenbank {
 
         _jdbcTemplate           = jdbcTemplate;
         _nutzerRowMapper        = nutzerRowMapper;
+        _namedParamJdbcTemplate = namedParamJdbcTemplate;
+        _ressourcenDateiLader   = ressourcenDateiLader;
+        _heuteEintragChecker    = heuteEintragChecker;
+        _datumsFormatierer      = datumsFormatierer;
 
-        _namedParamJdbcTemplate    = namedParamJdbcTemplate;
         _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
-
-        _ressourcenDateiLader = ressourcenDateiLader;
-        _heuteEintragChecker  = heuteEintragChecker;
-        _datumsFormatierer    = datumsFormatierer;
     }
 
 
@@ -171,11 +172,11 @@ public class Datenbank {
                  """;
         try {
 
-            List<TagebuchEintrag> ergebnisListe =
-                    _jdbcTemplate.query( preparedStatement,
-                                         _eintragDataClassRowMapper,
-                                         nutzername // Platzhalterwert für Prepared Statement
-                                       );
+            final List<TagebuchEintrag> ergebnisListe =
+                        _jdbcTemplate.query( preparedStatement,
+                                            _eintragDataClassRowMapper,
+                                            nutzername // Platzhalterwert für Prepared Statement
+                                        );
 
             LOG.info( "Anzahl Tagebucheinträge für Nutzer \"{}\" ausgelesen: {}",
                       nutzername, ergebnisListe.size() );
@@ -278,7 +279,7 @@ public class Datenbank {
     public boolean upsertEintrag( String nutzername, String text ) {
 
         final Optional<String> stringOptional =
-                                  _ressourcenDateiLader.ladeRessourcenDatei( "sql/UpsertTagebucheintrag.sql" );
+                _ressourcenDateiLader.ladeRessourcenDatei( "sql/UpsertTagebucheintrag.sql" );
         if ( stringOptional.isEmpty() ) {
 
             LOG.error( "Prepared Statement für UPSERT konnte nicht aus Ressourcendatei geladen werden." );
@@ -305,4 +306,43 @@ public class Datenbank {
         }
     }
 
+
+    /**
+     * Alle Tagebucheinträge für Nutzer als PDF exportieren.
+     *
+     * @param nutzername Name des Nutzers, dessen Tagebuch exportiert werden soll.
+     *
+     * @return Liste mit allen Tagebucheinträgen für Nutzer als PDF-Datei; kann leer
+     *         sein, aber nicht {@code null}.
+     */
+    public List<TagebuchEintrag> getAlleTagebuchEintraegePDF( String nutzername ) {
+
+        final Optional<String> stringOptional =
+                _ressourcenDateiLader.ladeRessourcenDatei( "sql/PdfExport.sql" );
+        if ( stringOptional.isEmpty() ) {
+
+            LOG.error( "Prepared Statement für SELECT konnte nicht aus Ressourcendatei geladen werden." );
+            return emptyList();
+        }
+
+        final String preparedStatement = stringOptional.get();
+
+        // Werte für Platzhalter in Prepared Statement definieren
+        final MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue( "nutzername", nutzername );
+
+        try {
+            final List<TagebuchEintrag> ergebnisListe =
+                                _namedParamJdbcTemplate.query( preparedStatement,
+                                                               params,
+                                                               _eintragDataClassRowMapper );
+            return ergebnisListe;
+        }
+        catch ( DataAccessException ex ) {
+
+            LOG.error( "Fehler bei SELECT für PDF-Export für Nutzer \"{}\".",
+                       nutzername, ex );
+            return emptyList();
+        }
+    }
 }

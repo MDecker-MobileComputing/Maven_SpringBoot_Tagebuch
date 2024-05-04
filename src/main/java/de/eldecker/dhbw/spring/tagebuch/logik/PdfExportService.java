@@ -7,10 +7,15 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
+import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -28,6 +33,19 @@ import com.lowagie.text.pdf.PdfWriter;
 public class PdfExportService {
 
     private static Logger LOG = LoggerFactory.getLogger( PdfExportService.class );
+
+    /** Bean für Zugriff auf Datenbank. */
+    private final Datenbank _datenbank;
+
+
+    /**
+     * Konstruktor für <i>Dependency Injection</i>.
+     */
+    @Autowired
+    public PdfExportService( Datenbank datenbank ) {
+
+        _datenbank = datenbank;
+    }
 
 
     /**
@@ -64,6 +82,17 @@ public class PdfExportService {
             final Font fontFett = FontFactory.getFont( HELVETICA, 16, BOLD );
             final Paragraph title = new Paragraph( "Tagebuchexport für " + nutzerName, fontFett );
             document.add(title);
+
+            final List<TagebuchEintrag> eintraegeList = _datenbank.getAlleTagebuchEintraegePDF( nutzerName );
+
+            final Paragraph anzahlZeile = new Paragraph( "Anzahl Einträge: " + eintraegeList.size() );
+            document.add( anzahlZeile );
+
+            eintraegeList.forEach( eintrag -> {
+
+                final Paragraph p = new Paragraph( eintrag.datum() + ": " + eintrag.text() );
+                document.add( p );
+            });
 
             //document.add( new Paragraph( demoText ) );
 
