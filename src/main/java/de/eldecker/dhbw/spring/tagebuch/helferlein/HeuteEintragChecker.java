@@ -1,12 +1,13 @@
 package de.eldecker.dhbw.spring.tagebuch.helferlein;
 
+import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 
 
 /**
@@ -18,38 +19,16 @@ import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 @Component
 public class HeuteEintragChecker {
 
-    /** Datumsformatierer für Format {@code dd.MM.yyyy} (also zum Anzeigen), z.B. {@code 23.04.2024}. */
-    private DateTimeFormatter _datumAnzeigeFormatierer = DateTimeFormatter.ofPattern( "dd.MM.yyyy" );
-
-    /** Datumsformatierer für Format {@code yyyy-MM-dd} (also für Datenbank), z.B. {@code 2024-04-23}. */
-    private DateTimeFormatter _datumDatenbankFormatierer = DateTimeFormatter.ofPattern( "yyyy-MM-dd" );
-
+    /** Bean für Formatierung von Datum-/Uhrzeit-Strings */
+    private final DatumsFormatierer _datumsFormatierer;
 
     /**
-     * Gibt aktuelles Datum im Format {@code dd.MM.yyyy} zurück (wird bei jedem Aufruf
-     * neu berechnet, stimmt also auch, wenn Anwendung mehr als einen Tag lang läuft).
-     *
-     * @return Heutiges Datum im Format {@code dd.MM.yyyy}
+     * Konstruktor für <i>Dependency Injection</i>.
      */
-    public String getHeuteDatumAnzeigeString() {
+    @Autowired
+    public HeuteEintragChecker( DatumsFormatierer datumsFormatierer ) {
 
-        final LocalDate heute = LocalDate.now();
-
-        return _datumAnzeigeFormatierer.format( heute );
-    }
-
-    /**
-     * Gibt aktuelles Datum im Format {@code yyyy-MM-dd} zurück (wird bei jedem Aufruf
-     * neu berechnet, stimmt also auch, wenn Anwendung mehr als einen Tag lang läuft).
-     * Dieses Format wird für die Speicherung in der Datenbank benötigt.
-     *
-     * @return Heutiges Datum im Format {@code yyyy-MM-dd}
-     */
-    public String getHeuteDatumDatenbankString() {
-
-        final LocalDate heute = LocalDate.now();
-
-        return _datumDatenbankFormatierer.format( heute );
+        _datumsFormatierer = datumsFormatierer;
     }
 
 
@@ -89,7 +68,7 @@ public class HeuteEintragChecker {
      */
     public boolean istEintragFuerHeute( TagebuchEintrag eintrag ) {
 
-        final String heuteDatumString = getHeuteDatumAnzeigeString();
+        final String heuteDatumString = _datumsFormatierer.getHeuteDatumAnzeigeString();
 
         return eintrag.datum().startsWith( heuteDatumString );
     }

@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import de.eldecker.dhbw.spring.tagebuch.helferlein.DatumsFormatierer;
 import de.eldecker.dhbw.spring.tagebuch.helferlein.HeuteEintragChecker;
 import de.eldecker.dhbw.spring.tagebuch.helferlein.RessourcenDateiLader;
 import de.eldecker.dhbw.spring.tagebuch.model.Nutzer;
@@ -77,7 +78,11 @@ public class Datenbank {
     /** Hilfs-Bean zum Laden von SQL-Dateien mit <i>Prepared Statements</i>. */
     private final RessourcenDateiLader _ressourcenDateiLader;
 
+    /** Hilfs-Bean für Prüfung, ob ein Tagebucheintrag für heute existiert. */
     private final HeuteEintragChecker _heuteEintragChecker;
+
+    /** Hilfs-Bean für Formatierung von Datum-/Uhrzeit-Strings */
+    private final DatumsFormatierer _datumsFormatierer;
 
 
     /**
@@ -89,7 +94,8 @@ public class Datenbank {
                       NutzerRowMapper            nutzerRowMapper,
                       NamedParameterJdbcTemplate namedParamJdbcTemplate,
                       RessourcenDateiLader       ressourcenDateiLader,
-                      HeuteEintragChecker        heuteEintragChecker
+                      HeuteEintragChecker        heuteEintragChecker,
+                      DatumsFormatierer          datumsFormatierer
                     ) {
 
         _jdbcTemplate           = jdbcTemplate;
@@ -100,6 +106,7 @@ public class Datenbank {
 
         _ressourcenDateiLader = ressourcenDateiLader;
         _heuteEintragChecker  = heuteEintragChecker;
+        _datumsFormatierer    = datumsFormatierer;
     }
 
 
@@ -248,7 +255,7 @@ public class Datenbank {
      */
     public Optional<TagebuchEintrag> getTagebuchEintragHeute( String nutzername ) {
 
-        final String heuteDatum = _heuteEintragChecker.getHeuteDatumDatenbankString();
+        final String heuteDatum = _datumsFormatierer.getHeuteDatumDatenbankString();
 
         return getTagebuchEintrag( nutzername, heuteDatum );
     }
