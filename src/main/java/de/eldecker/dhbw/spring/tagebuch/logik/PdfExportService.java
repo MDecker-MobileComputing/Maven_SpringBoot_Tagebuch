@@ -1,5 +1,8 @@
 package de.eldecker.dhbw.spring.tagebuch.logik;
 
+import static com.lowagie.text.Font.BOLD;
+import static com.lowagie.text.FontFactory.HELVETICA;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -55,8 +60,13 @@ public class PdfExportService {
             document.addCreator ( "Tagebuch-Webapp mit Spring Boot"  );
 
             document.open();
-            final String demoText = "Tagebuchexport für " + nutzerName + " (" + new Date() + ")";
-            document.add( new Paragraph( demoText ) );
+
+            final Font fontFett = FontFactory.getFont( HELVETICA, 16, BOLD );
+            final Paragraph title = new Paragraph( "Tagebuchexport für " + nutzerName, fontFett );
+            document.add(title);
+
+            //document.add( new Paragraph( demoText ) );
+
             document.close();
 
             bos.flush();
