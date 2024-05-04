@@ -37,11 +37,11 @@ public class Sicherheitskonfiguration {
     private static final String ROLLE_NUTZER = "nutzer";
 
     /** Array mit Pfaden, auf die auch ohne Authentifizierung zugegriffen werden kann. */
-    private final static AntPathRequestMatcher[] oeffentlichePfadeArray = { antMatcher( "/index.html"      ),
-                                                                            antMatcher( "/abgemeldet.html" ),
-                                                                            antMatcher( "/h2-console/**"   ),
-                                                                            antMatcher( "/styles.css"      ) // wird von index.html und abgemeldet.html benötigt
-                                                                          };
+    private final static AntPathRequestMatcher[] OEFFENTLICHE_PFADE_ARRAY = { antMatcher( "/index.html"      ),
+                                                                              antMatcher( "/abgemeldet.html" ),
+                                                                              antMatcher( "/h2-console/**"   ),
+                                                                              antMatcher( "/styles.css"      ) // wird von index.html und abgemeldet.html benötigt
+                                                                            };
     /** Repository-Bean für Zugriff auf Datenbank. */
     private Datenbank _datenbank;
 
@@ -58,21 +58,21 @@ public class Sicherheitskonfiguration {
 
     /**
      * Konfiguration Sicherheit für HTTP.
-     */
+     */        
     @Bean
     public SecurityFilterChain httpKonfiguration(HttpSecurity http) throws Exception {
 
         return http.csrf( (csrf) -> csrf.disable() )
-                   .authorizeHttpRequests( auth -> auth.requestMatchers( oeffentlichePfadeArray ).permitAll()
-                                                       .anyRequest().authenticated() ) // alle anderen Pfade gehen nur mit Authentifizierung
+                   .authorizeHttpRequests( auth -> auth.requestMatchers( OEFFENTLICHE_PFADE_ARRAY ).permitAll()
+                                                       .anyRequest().authenticated() )
                    .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true ) )
                    .logout(logout -> logout
-                                           .logoutUrl( "/logout" ) // "/logout" ist Default
+                                           .logoutUrl( "/logout" ) 
                                            .logoutSuccessUrl("/abgemeldet.html")
                                            .invalidateHttpSession( true )
                                            .deleteCookies( "JSESSIONID" )
                        )
-                   .headers( headers -> headers.disable() ) // damit H2-Console funktioniert
+                   .headers( headers -> headers.disable() ) 
                    .build();
     }
 
