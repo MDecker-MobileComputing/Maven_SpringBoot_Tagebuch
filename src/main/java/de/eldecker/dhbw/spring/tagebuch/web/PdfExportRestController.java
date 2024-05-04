@@ -33,58 +33,68 @@ import de.eldecker.dhbw.spring.tagebuch.logik.PdfExportService;
 public class PdfExportRestController {
 
     private static Logger LOG = LoggerFactory.getLogger( PdfExportRestController.class );
-    
+
     /** Bean mit Logik für PDF-Erzeugung */
     private final PdfExportService _pdfExportService;
-    
-    
+
+
     /**
      * Konstruktor für <i>Dependency Injection</i>.
      */
     @Autowired
     public PdfExportRestController( PdfExportService pdfExportService ) {
-        
+
         _pdfExportService = pdfExportService;
     }
 
-    
+
+    /**
+     * REST-Endpunkt liefert PDF-Dokument mit allen Tagebucheinträgen des angemeldeten Nutzers
+     * zurück. Der Browser soll das PDF-Dokument herunterladen (und nicht versuchen, es anzuzeigen).
+     *
+     * @param authentication Authentifizierungs-Objekt des angemeldeten Nutzers.
+     *
+     * @return HTTP-Response mit PDF-Dokument als Body.
+     */
     @GetMapping(value = "/generatePDF", produces = APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePDF( Authentication authentication ) throws PdfExportException {
-        
+
         final String nutzerName = authentication.getName();
         LOG.info( "PDF-Export angefordert für Nutzer \"{}\".", nutzerName );
-        
+
         final ByteArrayOutputStream pdfStream           = _pdfExportService.generatePdf( nutzerName ); // throws PdfExportException
         final ByteArrayInputStream  pdfInputStream      = new ByteArrayInputStream( pdfStream.toByteArray() );
         final InputStreamResource   inputStreamResource = new InputStreamResource( pdfInputStream );
-                
+
+        final HttpHeaders headers = erzeugeHeader( nutzerName );
+
         return ResponseEntity.ok()
-                             .headers( buildHeaders( nutzerName ) )
+                             .headers( headers )
                              .contentType( APPLICATION_PDF )
-                             .body( inputStreamResource);        
+                             .body( inputStreamResource );
     }
-    
-    
+
+
     /**
      * Erzeugt HTTP-Header "Content-Disposition", laut dem der Browser die Datei herunterladen soll
      * (und nicht versuchen soll, sie anzuzeigen). Dieser Header enthält auch einen Vorschlag für den
      * Dateinamen.
-     * 
+     *
      * @param nutzerName Name des Nutzers (ist in Dateiname enthalten).
-     * 
+     *
      * @return Header-Objekt für {@code ResponseEntity}
      */
-    private HttpHeaders buildHeaders( String nutzerName ) {
+    private HttpHeaders erzeugeHeader( String nutzerName ) {
 
         final DateTimeFormatter datumsZeitFormatierer = DateTimeFormatter.ofPattern( "yyyy-MM-dd" );
         final String datumZeitString = datumsZeitFormatierer.format( LocalDate.now() );
-        
-        final String contentDispositionHeader = String.format( "attachment; filename=Tagebuch_%s_%s.pdf", 
-                                                               nutzerName, datumZeitString );        
+
+        final String contentDispositionHeader = String.format( "attachment; filename=Tagebuch_%s_%s.pdf",
+                                                               nutzerName, datumZeitString );
         final HttpHeaders headers = new HttpHeaders();
         headers.add( CONTENT_DISPOSITION, contentDispositionHeader );
 
         return headers;
     }
-    
+
 }
