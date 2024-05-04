@@ -34,6 +34,12 @@ public class PdfExportService {
 
     private static Logger LOG = LoggerFactory.getLogger( PdfExportService.class );
 
+    /** Schriftart für Überschrift (groß+fett). */
+    private static final Font FONT_TITEL = FontFactory.getFont( HELVETICA, 16, BOLD );
+
+    /** Fette Schrift normaler Größe. */
+    private static final Font FONT_FETT = FontFactory.getFont( HELVETICA, 12, BOLD );
+
     /** Bean für Zugriff auf Datenbank. */
     private final Datenbank _datenbank;
 
@@ -79,22 +85,26 @@ public class PdfExportService {
 
             document.open();
 
-            final Font fontFett = FontFactory.getFont( HELVETICA, 16, BOLD );
-            final Paragraph title = new Paragraph( "Tagebuchexport für " + nutzerName, fontFett );
-            document.add(title);
+
+            final Paragraph titelAbsatz = new Paragraph( "Tagebuchexport für " + nutzerName, FONT_TITEL );
+            titelAbsatz.setSpacingAfter( 20 );
+            document.add( titelAbsatz );
 
             final List<TagebuchEintrag> eintraegeList = _datenbank.getAlleTagebuchEintraegePDF( nutzerName );
 
-            final Paragraph anzahlZeile = new Paragraph( "Anzahl Einträge: " + eintraegeList.size() );
-            document.add( anzahlZeile );
+            final Paragraph anzahlZeilen = new Paragraph( "Anzahl Einträge: " + eintraegeList.size() );
+            anzahlZeilen.setSpacingAfter( 20 );
+            document.add( anzahlZeilen );
 
             eintraegeList.forEach( eintrag -> {
 
-                final Paragraph p = new Paragraph( eintrag.datum() + ": " + eintrag.text() );
-                document.add( p );
-            });
+                final Paragraph datumParagraph = new Paragraph( eintrag.datum() + ": ", FONT_FETT );
+                final Paragraph textParagraph  = new Paragraph( eintrag.text() );
+                textParagraph.setSpacingAfter( 20 );
 
-            //document.add( new Paragraph( demoText ) );
+                document.add( datumParagraph );
+                document.add( textParagraph  );
+            });
 
             document.close();
 
