@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import de.eldecker.dhbw.spring.tagebuch.helferlein.DatumsFormatierer;
-import de.eldecker.dhbw.spring.tagebuch.helferlein.HeuteEintragChecker;
 import de.eldecker.dhbw.spring.tagebuch.helferlein.RessourcenDateiLader;
 import de.eldecker.dhbw.spring.tagebuch.model.Nutzer;
 import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
@@ -80,9 +79,6 @@ public class Datenbank {
     /** Hilfs-Bean zum Laden von SQL-Dateien mit <i>Prepared Statements</i>. */
     private final RessourcenDateiLader _ressourcenDateiLader;
 
-    /** Hilfs-Bean für Prüfung, ob ein Tagebucheintrag für heute existiert. */
-    private final HeuteEintragChecker _heuteEintragChecker;
-
     /** Hilfs-Bean für Formatierung von Datum-/Uhrzeit-Strings */
     private final DatumsFormatierer _datumsFormatierer;
 
@@ -96,7 +92,6 @@ public class Datenbank {
                       NutzerRowMapper            nutzerRowMapper,
                       NamedParameterJdbcTemplate namedParamJdbcTemplate,
                       RessourcenDateiLader       ressourcenDateiLader,
-                      HeuteEintragChecker        heuteEintragChecker,
                       DatumsFormatierer          datumsFormatierer
                     ) {
 
@@ -104,7 +99,6 @@ public class Datenbank {
         _nutzerRowMapper        = nutzerRowMapper;
         _namedParamJdbcTemplate = namedParamJdbcTemplate;
         _ressourcenDateiLader   = ressourcenDateiLader;
-        _heuteEintragChecker    = heuteEintragChecker;
         _datumsFormatierer      = datumsFormatierer;
 
         _eintragDataClassRowMapper = new DataClassRowMapper<>( TagebuchEintrag.class );
@@ -327,11 +321,11 @@ public class Datenbank {
 
         final String preparedStatement = stringOptional.get();
 
-        // Werte für Platzhalter in Prepared Statement definieren
         final MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue( "nutzername", nutzername );
 
         try {
+            
             final List<TagebuchEintrag> ergebnisListe =
                                 _namedParamJdbcTemplate.query( preparedStatement,
                                                                params,

@@ -6,7 +6,6 @@ import static com.lowagie.text.FontFactory.HELVETICA;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -72,39 +71,15 @@ public class PdfExportService {
             final BufferedOutputStream  bos  = new BufferedOutputStream( baos );
 
             final Document document = new Document();
-            final PdfWriter writer = PdfWriter.getInstance( document, bos );
+            PdfWriter.getInstance( document, bos );
 
-            writer.setViewerPreferences( PdfWriter.PageLayoutSinglePage ); // funktioniert nicht?
-
-            // Metadaten setzen
-            document.addTitle   ( "Tagebuchexport für " + nutzerName );
-            document.addAuthor  ( nutzerName                         );
-            document.addSubject ( "Export Tagebuch"                  );
-            document.addKeywords( "Tagebuch, Export, PDF"            );
-            document.addCreator ( "Tagebuch-Webapp mit Spring Boot"  );
+            metadatenSetzen( document, nutzerName );
 
             document.open();
 
 
-            final Paragraph titelAbsatz = new Paragraph( "Tagebuchexport für " + nutzerName, FONT_TITEL );
-            titelAbsatz.setSpacingAfter( 20 );
-            document.add( titelAbsatz );
 
-            final List<TagebuchEintrag> eintraegeList = _datenbank.getAlleTagebuchEintraegePDF( nutzerName );
-
-            final Paragraph anzahlZeilen = new Paragraph( "Anzahl Einträge: " + eintraegeList.size() );
-            anzahlZeilen.setSpacingAfter( 20 );
-            document.add( anzahlZeilen );
-
-            eintraegeList.forEach( eintrag -> {
-
-                final Paragraph datumParagraph = new Paragraph( eintrag.datum() + ": ", FONT_FETT );
-                final Paragraph textParagraph  = new Paragraph( eintrag.text() );
-                textParagraph.setSpacingAfter( 20 );
-
-                document.add( datumParagraph );
-                document.add( textParagraph  );
-            });
+            inhaltSchreiben( document, nutzerName );
 
             document.close();
 
@@ -124,5 +99,53 @@ public class PdfExportService {
             throw new PdfExportException( fehlerText , ex );
         }
     }
+    
+    
+    /**
+     * Metadaten in PDF-Dokument setzen.
+     * 
+     * @param document PDF-Dokument
+     * 
+     * @param nutzerName Name des Nutzers, wie er in PDF-Metadaten genannt wird
+     */
+    private void metadatenSetzen( Document document, String nutzerName ) {
+        
+        document.addTitle   ( "Tagebuchexport für " + nutzerName );
+        document.addAuthor  ( nutzerName                         );
+        document.addSubject ( "Export Tagebuch"                  );
+        document.addKeywords( "Tagebuch, Export, PDF"            );
+        document.addCreator ( "Tagebuch-Webapp mit Spring Boot"  );
+    }
 
+    
+    /**
+     * Eigentlichen Inhalt in PDF schreiben: Überschrift, Anzahl Einträge, alle Einträge mit Datum.
+     * 
+     * @param document PDF-Dokument
+     * 
+     * @param nutzerName Name des Nutzers, für den Tagebucheinträge in PDF geschrieben werden sollen.
+     */
+    private void inhaltSchreiben( Document document, String nutzerName ) {
+        
+        final Paragraph titelAbsatz = new Paragraph( "Tagebuchexport für " + nutzerName, FONT_TITEL );
+        titelAbsatz.setSpacingAfter( 20 );
+        document.add( titelAbsatz );        
+        
+        final List<TagebuchEintrag> eintraegeList = _datenbank.getAlleTagebuchEintraegePDF( nutzerName );
+
+        final Paragraph anzahlZeilen = new Paragraph( "Anzahl Einträge: " + eintraegeList.size() );
+        anzahlZeilen.setSpacingAfter( 20 );
+        document.add( anzahlZeilen );
+
+        eintraegeList.forEach( eintrag -> {
+
+            final Paragraph datumParagraph = new Paragraph( eintrag.datum() + ": ", FONT_FETT );
+            final Paragraph textParagraph  = new Paragraph( eintrag.text() );
+            textParagraph.setSpacingAfter( 20 );
+
+            document.add( datumParagraph );
+            document.add( textParagraph  );
+        });        
+    }
+    
 }
