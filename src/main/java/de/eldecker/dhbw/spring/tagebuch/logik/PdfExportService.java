@@ -77,8 +77,6 @@ public class PdfExportService {
 
             document.open();
 
-
-
             inhaltSchreiben( document, nutzerName );
 
             document.close();
