@@ -90,7 +90,7 @@ public class Sicherheitskonfiguration {
         
         /*
         UserDetails user1 = User.withUsername( "alice" )
-                                .password( passwordEncoder.encode("g3h3im") )
+                                .password( passwordEncoder.encode( "g3h3im" ) )
                                 .roles( ROLLE_NUTZER )
                                 .build();
         */
@@ -101,8 +101,8 @@ public class Sicherheitskonfiguration {
                 nutzerListe.stream()
                            .map( nutzer -> {
 
-                                 final String nutzername        = nutzer.nutzername();
-                                 final String passwortEncoded   = passwordEncoder.encode( nutzer.passwort() );
+                                 final String nutzername      = nutzer.nutzername();
+                                 final String passwortEncoded = passwordEncoder.encode( nutzer.passwort() );
 
                                  final UserDetails userDetails = User.withUsername( nutzername )
                                                                      .password( passwortEncoded )
