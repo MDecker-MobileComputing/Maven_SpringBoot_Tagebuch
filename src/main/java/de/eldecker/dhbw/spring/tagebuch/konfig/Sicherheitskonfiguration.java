@@ -80,17 +80,18 @@ public class Sicherheitskonfiguration {
     /**
      * Nutzernamen mit Passwörtern definieren (werden aus Datenbank geladen).
      *
-     * @param passwordEncoder Bean für Kodierung Passwörter.
-     *
      * @return Objekt mit allen Nutzernamen und Passwörtern
      */
     @Bean
-    public InMemoryUserDetailsManager nutzerLaden( PasswordEncoder passwordEncoder ) {
+    public InMemoryUserDetailsManager nutzerLaden() {
 
+        final PasswordEncoder passwordEncoder = createDelegatingPasswordEncoder();
+        // Beispielwert Passwort "g3h3im" nach Kodierung: {bcrypt}$2a$10$/KqHJ.PNBaEV4hX2Y4hmDeANEPqJcz4./VoLp1H66DQ
+        
         /*
-        UserDetails user1 = User.withUsername("alice")
-                                .password(passwordEncoder.encode("g3h3im"))
-                                .roles(ROLLE_NUTZER)
+        UserDetails user1 = User.withUsername( "alice" )
+                                .password( passwordEncoder.encode("g3h3im") )
+                                .roles( ROLLE_NUTZER )
                                 .build();
         */
 
@@ -114,24 +115,6 @@ public class Sicherheitskonfiguration {
         LOG.info( "Anzahl Nutzer für Authentifzierung geladen: {}", nutzerListe.size() );
 
         return new InMemoryUserDetailsManager( userDetailsList );
-    }
-
-
-    /**
-     * Bean für Passwort-Kodierung erzeugen.
-     * <br><br>
-     *
-     * Beispielwert Passwort "g3h3im" nach Kodierung:
-     * <pre>
-     * {bcrypt}$2a$10$/KqHJ.PNBaEV4hX2Y4hmDeANEPqJcz4./VoLp1H66DQ
-     * </pre>
-     *
-     * @return Bean für Passwort-Kodierung mit Algorithmus "bcrypt".
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-
-        return createDelegatingPasswordEncoder();
     }
 
 }
