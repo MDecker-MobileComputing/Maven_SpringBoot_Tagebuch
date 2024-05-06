@@ -47,9 +47,9 @@ public class RessourcenDateiLader {
      * @return Optional enthält Inhalt von Textdatei im Ressourcenordner unter {@code pfad}; 
      *         im Fehlerfall ist das Optional leer.          
      */
-    public Optional<String> ladeRessourcenDatei(String pfad) {
+    public Optional<String> ladeRessourcenDatei( String pfad ) {
         
-        final String resourceLocation = "classpath:" + pfad;
+        final String resourceLocation = "classpath:" + pfad; // Bsp: classpath:sql/UpsertTagebucheintrag.sql 
         
         final Resource resource = _resourceLoader.getResource( resourceLocation );
         
