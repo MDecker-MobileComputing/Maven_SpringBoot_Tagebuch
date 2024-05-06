@@ -206,7 +206,7 @@ public class Datenbank {
      *         und {@code datum} oder ist leer; wenn der Tagebucheintrag gefunden wurde,
      *         dann enthält das Attribut {@code link} einen leeren String (weil der Link
      *         zur Detailansicht des Eintrags nicht benötigt wird, der Nutzer hat die
-    *          Detailansicht ja bereits aufgerufen).
+     *         Detailansicht ja bereits aufgerufen).
      */
     public Optional<TagebuchEintrag> getTagebuchEintrag( String nutzername, String datum ) {
 
