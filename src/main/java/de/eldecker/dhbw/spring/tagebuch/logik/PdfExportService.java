@@ -63,7 +63,7 @@ public class PdfExportService {
      *
      * @throws PdfExportException Falls ein Fehler beim Export auftritt.
      */
-    public ByteArrayOutputStream generatePdf( String nutzerName ) throws PdfExportException {
+    public ByteArrayOutputStream erzeugePdf( String nutzerName ) throws PdfExportException {
 
         try {
 

@@ -65,7 +65,7 @@ public class PdfExportRestController {
         final String nutzerName = authentication.getName();
         LOG.info( "PDF-Export angefordert für Nutzer \"{}\".", nutzerName );
 
-        final ByteArrayOutputStream pdfStream           = _pdfExportService.generatePdf( nutzerName ); // throws PdfExportException
+        final ByteArrayOutputStream pdfStream           = _pdfExportService.erzeugePdf( nutzerName ); // throws PdfExportException
         final ByteArrayInputStream  pdfInputStream      = new ByteArrayInputStream( pdfStream.toByteArray() );
         final InputStreamResource   inputStreamResource = new InputStreamResource( pdfInputStream );
 
