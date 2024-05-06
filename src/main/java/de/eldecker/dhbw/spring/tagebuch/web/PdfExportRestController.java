@@ -82,8 +82,11 @@ public class PdfExportRestController {
      * Erzeugt HTTP-Header "Content-Disposition", laut dem der Browser die Datei herunterladen soll
      * (und nicht versuchen soll, sie anzuzeigen). Dieser Header enthält auch einen Vorschlag für den
      * Dateinamen.
+     * <br><br>
+     * 
+     * Beispiel für erzeugten Dateinamen: {@code Tagebuch_alice_2024-05-06_10-52.pdf }
      *
-     * @param nutzerName Name des Nutzers (ist in Dateiname enthalten).
+     * @param nutzerName Name des Nutzers (wird Bestandteil für Dateiname)
      *
      * @return Header-Objekt für {@code ResponseEntity}
      */
