@@ -28,13 +28,13 @@
     <a href="neu">Neuer Eintrag</a>
   </p>
 
-  <div th:each="eintrag : ${tagebucheintrage}">
-    <p>
-       <span class="fett"   th:text="${eintrag.datum + ':'}" ></span>
-       <span class="kursiv" th:text="${eintrag.text}"        ></span>
-       ( <a th:href="@{${eintrag.link}}">Öffnen</a> )
-    </p>
-  </div>
+
+  <p th:each="eintrag : ${tagebucheintrage}">
+      <span class="fett"   th:text="${eintrag.datum + ':'}" ></span>
+      <span class="kursiv" th:text="${eintrag.text}"        ></span>
+      ( <a th:href="@{${eintrag.link}}">Öffnen</a> )
+  </p>
+
 
 </body>
 </html>
