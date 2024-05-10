@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Tagebucheintrag für den <span th:text="${eintrag_datum}"></span></title>
+    <title th:text="'Tagebucheintrag: ' + ${eintrag_datum}"></title>
     <meta charset="utf-8" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../../styles.css">
