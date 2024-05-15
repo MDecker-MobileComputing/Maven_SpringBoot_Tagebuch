@@ -66,7 +66,7 @@ public class Sicherheitskonfiguration {
                    .authorizeHttpRequests( auth -> auth.requestMatchers( OEFFENTLICHE_PFADE_ARRAY ).permitAll()
                                                        .anyRequest().authenticated() )
                    .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true ) )
-                   .logout(logout -> logout
+                   .logout( logout -> logout
                                            .logoutUrl( "/logout" ) 
                                            .logoutSuccessUrl("/abgemeldet.html")
                                            .invalidateHttpSession( true )

@@ -10,7 +10,7 @@ package de.eldecker.dhbw.spring.tagebuch.model;
  * 
  * @param passwort Passwort im Klartext
  */
-public record Nutzer( int id, 
+public record Nutzer( int    id, 
                       String nutzername, 
                       String passwort 
                     ) {
