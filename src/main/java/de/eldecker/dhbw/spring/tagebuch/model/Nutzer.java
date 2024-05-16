@@ -1,5 +1,6 @@
 package de.eldecker.dhbw.spring.tagebuch.model;
 
+
 /**
  * Ein Objekt dieser Record-Klasse repräsentiert ein Nutzer-Objekt aus der
  * gleichnamigen Datenbanktabelle.

@@ -2,7 +2,7 @@ package de.eldecker.dhbw.spring.tagebuch.model;
 
 
 /**
- * Einzelner Tagebucheintrag.
+ * Klassen, deren Objekte einzelne Tagebucheinträge repräsentieren.
  *
  * @param id Eindeutige ID des Tagebucheintrags (über alle Nutzer hinweg)
  *
@@ -16,9 +16,9 @@ package de.eldecker.dhbw.spring.tagebuch.model;
  *             wenn das Objekt für eine Detailseite erzeugt wird, dann
  *             enthält dieses Feld einen leerer String.
  */
-public record TagebuchEintrag( int    id   ,
-                               String text ,
-                               String datum,
+public record TagebuchEintrag( int    id    ,
+                               String text  ,
+                               String datum ,
                                String link
                              ) {
 }
