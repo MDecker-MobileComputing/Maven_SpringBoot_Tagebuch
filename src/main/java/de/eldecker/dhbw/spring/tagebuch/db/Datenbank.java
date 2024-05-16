@@ -115,7 +115,7 @@ public class Datenbank {
 
         try {
 
-            List<Nutzer> ergebnisListe =
+            final List<Nutzer> ergebnisListe =
                     _jdbcTemplate.query( "SELECT * FROM nutzer ORDER BY nutzername",
                                          _nutzerRowMapper );
 
