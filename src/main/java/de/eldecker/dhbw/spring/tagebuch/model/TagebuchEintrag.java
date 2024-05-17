@@ -4,7 +4,8 @@ package de.eldecker.dhbw.spring.tagebuch.model;
 /**
  * Klassen, deren Objekte einzelne Tagebucheinträge repräsentieren.
  *
- * @param id Eindeutige ID des Tagebucheintrags (über alle Nutzer hinweg)
+ * @param id Eindeutige ID des Tagebucheintrags (über alle Nutzer hinweg,
+ *           weil Primärschlüssel für DB-Tabelle).
  *
  * @param text Eigentlich Inhalt des Eintrags
  *
