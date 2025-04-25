@@ -11,7 +11,7 @@ jobs:
     - name: Git-Repo auschecken
       uses: actions/checkout@v4
     - name: JDK einrichten
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: 21
         distribution: 'temurin'
