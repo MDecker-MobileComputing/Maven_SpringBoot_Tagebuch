@@ -180,7 +180,7 @@ public class ThymeleafWebController {
 
 
     /**
-     * Neuen Tagebucheintrag für aktuellen
+     * Neuen Eintrag für aktuellen Tag erzeugen.
      *
      * @param model Objekt, in das die Werte für die Platzhalter in der Template-Datei
      *              geschrieben werden.
