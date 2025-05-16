@@ -27,6 +27,15 @@ MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
     VALUES ( 1, '2024-01-02', 'Zweiter Eintrag von Alice: Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' );
+    
+MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
+    KEY(nutzer_id, datum)
+    VALUES ( 1, '2024-02-01', 'Heute ist schon der erste Tag im Februar.' );
+
+MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
+    KEY(nutzer_id, datum)
+    VALUES ( 1, '2024-04-01', 'Das erste Quartal im neuen Jahr ist rum.' );
+    
 
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
@@ -35,6 +44,14 @@ MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
     VALUES ( 2, '2024-03-15', 'Heute habe ich verschlafen' );
+
+MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
+    KEY(nutzer_id, datum)
+    VALUES ( 2, '2024-03-16', 'Wie gestern habe ich auch heute verschlafen' );
+
+MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
+    KEY(nutzer_id, datum)
+    VALUES ( 2, '2024-03-17', 'Zum dritten Mal in Folge habe ich heute verschlafen' );
 
 
 -- Vorlage INSERT-Statement für H2-Console:
