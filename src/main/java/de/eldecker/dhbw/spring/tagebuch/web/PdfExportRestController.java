@@ -94,8 +94,10 @@ public class PdfExportRestController {
 
         final String datumZeitString = _datumsFormatierer.getHeuteDatumZeitFuerDateiname();
 
-        final String contentDispositionHeader = String.format( "attachment; filename=Tagebuch_%s_%s.pdf",
-                                                               nutzerName, datumZeitString );
+        final String contentDispositionHeader = 
+                    String.format( "attachment; filename=Tagebuch_%s_%s.pdf", // "inline" statt "attachtment", wenn Datei erst im Browser angezeigt werden soll
+                                   nutzerName, datumZeitString );        
+
         final HttpHeaders headers = new HttpHeaders();
         headers.add( CONTENT_DISPOSITION, contentDispositionHeader );
 
