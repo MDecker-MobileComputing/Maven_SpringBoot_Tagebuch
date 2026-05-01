@@ -61,7 +61,7 @@ public class Sicherheitskonfiguration {
     public SecurityFilterChain httpKonfiguration(HttpSecurity http) throws Exception {
 
         return http
-                .csrf( csrf -> csrf.ignoringRequestMatchers( "/h2-console/**" ) )
+        		.csrf( csrf -> csrf.disable() )
                 .authorizeHttpRequests( auth -> auth.requestMatchers( OEFFENTLICHE_PFADE_ARRAY )
                 		                            .permitAll()
                                                     .anyRequest()
