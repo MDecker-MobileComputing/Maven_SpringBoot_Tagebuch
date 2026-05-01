@@ -67,7 +67,7 @@ public class Sicherheitskonfiguration {
                                                     .anyRequest()
                                                     .authenticated()
                                       )
-                .formLogin( formLogin -> formLogin.defaultSuccessUrl("/app/hauptseite", true) )                        
+                .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true) )                        
                 .logout( logout -> logout.logoutUrl( "/logout" )                        
                                          .logoutSuccessUrl( "/abgemeldet.html" )
                                          .invalidateHttpSession( true )

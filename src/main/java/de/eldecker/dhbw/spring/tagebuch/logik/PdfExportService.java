@@ -125,7 +125,7 @@ public class PdfExportService {
      */
     private void inhaltSchreiben( Document document, String nutzerName ) {
         
-        final Paragraph titelAbsatz = new Paragraph( "Tagebuchexport für " + nutzerName, FONT_TITEL );
+        final Paragraph titelAbsatz = new Paragraph( "Tagebuch-Export für " + nutzerName, FONT_TITEL );
         titelAbsatz.setSpacingAfter( 20 );
         document.add( titelAbsatz );        
         

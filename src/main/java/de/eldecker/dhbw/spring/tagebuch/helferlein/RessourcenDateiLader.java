@@ -1,5 +1,6 @@
 package de.eldecker.dhbw.spring.tagebuch.helferlein;
 
+import static java.util.Optional.empty;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.readAllBytes;
 
@@ -65,12 +66,12 @@ public class RessourcenDateiLader {
             
             return Optional.of( string  );            
         }
-        catch (IOException ex) {
+        catch ( IOException ex ) {
             
             LOG.error( "Fehler beim Versuch die Ressourcendatei \"{}\" einzulesen: ", 
                        pfad, ex );
             
-            return Optional.empty();
+            return empty();
         }
     }
     
