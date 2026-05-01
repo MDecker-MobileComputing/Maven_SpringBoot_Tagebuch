@@ -61,19 +61,19 @@ public class Sicherheitskonfiguration {
     public SecurityFilterChain httpKonfiguration(HttpSecurity http) throws Exception {
 
         return http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(OEFFENTLICHE_PFADE_ARRAY).permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(formLogin -> formLogin
-                        .defaultSuccessUrl("/app/hauptseite", true))
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/abgemeldet.html")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID"))
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin()))
+                .csrf( csrf -> csrf.ignoringRequestMatchers( "/h2-console/**" ) )
+                .authorizeHttpRequests( auth -> auth.requestMatchers( OEFFENTLICHE_PFADE_ARRAY )
+                		                            .permitAll()
+                                                    .anyRequest()
+                                                    .authenticated()
+                                      )
+                .formLogin( formLogin -> formLogin.defaultSuccessUrl("/app/hauptseite", true) )                        
+                .logout( logout -> logout.logoutUrl( "/logout" )                        
+                                         .logoutSuccessUrl( "/abgemeldet.html" )
+                                         .invalidateHttpSession( true )
+                                         .deleteCookies( "JSESSIONID" )
+                        )
+                .headers( headers -> headers.frameOptions( frame -> frame.sameOrigin() ) )                        
                 .build();
     }
 
