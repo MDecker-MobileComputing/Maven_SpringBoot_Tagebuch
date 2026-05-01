@@ -35,7 +35,8 @@ public class Sicherheitskonfiguration {
     private static final String ROLLE_NUTZER = "nutzer";
 
     /** Array mit Pfaden, auf die auch ohne Authentifizierung zugegriffen werden kann. */
-    private final static String[] OEFFENTLICHE_PFADE_ARRAY = { "/index.html", 
+    private final static String[] OEFFENTLICHE_PFADE_ARRAY = { "/",
+    		                                                   "/index.html", 
     		                                                   "/abgemeldet.html", 
     		                                                   "/h2-console/**", 
     		                                                   "/tagebuch-styles.css" };
