@@ -1,7 +1,7 @@
 package de.eldecker.dhbw.spring.tagebuch.logik;
 
-import static com.lowagie.text.Font.BOLD;
-import static com.lowagie.text.FontFactory.HELVETICA;
+import static org.openpdf.text.Font.BOLD;
+import static org.openpdf.text.FontFactory.HELVETICA;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
 import de.eldecker.dhbw.spring.tagebuch.model.TagebuchEintrag;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfWriter;
+import org.openpdf.text.Document;
+import org.openpdf.text.DocumentException;
+import org.openpdf.text.Font;
+import org.openpdf.text.FontFactory;
+import org.openpdf.text.Paragraph;
+import org.openpdf.text.pdf.PdfWriter;
 
 
 /**
