@@ -2,7 +2,6 @@ package de.eldecker.dhbw.spring.tagebuch.konfig;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import de.eldecker.dhbw.spring.tagebuch.db.Datenbank;
 import de.eldecker.dhbw.spring.tagebuch.model.Nutzer;
@@ -37,11 +35,10 @@ public class Sicherheitskonfiguration {
     private static final String ROLLE_NUTZER = "nutzer";
 
     /** Array mit Pfaden, auf die auch ohne Authentifizierung zugegriffen werden kann. */
-    private final static AntPathRequestMatcher[] OEFFENTLICHE_PFADE_ARRAY = { antMatcher( "/index.html"      ),
-                                                                              antMatcher( "/abgemeldet.html" ),
-                                                                              antMatcher( "/h2-console/**"   ),
-                                                                              antMatcher( "/styles.css"      ) // wird von index.html und abgemeldet.html benötigt
-                                                                            };
+    private final static String[] OEFFENTLICHE_PFADE_ARRAY = { "/index.html", 
+    		                                                   "/abgemeldet.html", 
+    		                                                   "/h2-console/**", 
+    		                                                   "/tagebuch-styles.css" };
     /** Repository-Bean für Zugriff auf Datenbank. */
     private Datenbank _datenbank;
 
@@ -62,21 +59,24 @@ public class Sicherheitskonfiguration {
     @Bean
     public SecurityFilterChain httpKonfiguration(HttpSecurity http) throws Exception {
 
-        return http.csrf( (csrf) -> csrf.disable() )
-                   .authorizeHttpRequests( auth -> auth.requestMatchers( OEFFENTLICHE_PFADE_ARRAY ).permitAll()
-                                                       .anyRequest().authenticated() )
-                   .formLogin( formLogin -> formLogin.defaultSuccessUrl( "/app/hauptseite", true ) )
-                   .logout( logout -> logout
-                                           .logoutUrl( "/logout" ) 
-                                           .logoutSuccessUrl("/abgemeldet.html")
-                                           .invalidateHttpSession( true )
-                                           .deleteCookies( "JSESSIONID" )
-                       )
-                   .headers( headers -> headers.disable() ) 
-                   .build();
+        return http
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(OEFFENTLICHE_PFADE_ARRAY).permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(formLogin -> formLogin
+                        .defaultSuccessUrl("/app/hauptseite", true))
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/abgemeldet.html")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"))
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin()))
+                .build();
     }
 
-
+    
     /**
      * Nutzernamen mit Passwörtern definieren (werden aus Datenbank geladen).
      *

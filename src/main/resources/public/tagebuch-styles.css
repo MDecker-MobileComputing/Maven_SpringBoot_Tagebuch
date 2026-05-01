@@ -1,0 +1,53 @@
+/* CSS-Regeln für HTML-Elemente */
+
+body {
+    font-family: sans-serif;
+    padding: 1em;
+}
+
+h1 {
+    margin-bottom: 1.5em;
+}
+
+a {
+    margin-bottom: 1em;
+}
+
+ul li {
+    margin-bottom: 20px;
+}
+
+
+.fett {
+    font-weight: bold;
+}
+
+.kursiv {
+    font-style: italic;
+}
+
+textarea {
+    width: 100%;
+    margin-bottom: 1.5em
+}
+@media (min-width: 800px) {
+    textarea {
+        width: 50%;
+    }
+}
+
+
+/* CSS-Regeln für eigene Klassen */
+
+.meldung {
+    font-weight: bold;
+    margin-bottom: 1.5em
+}
+
+.abstand_unten {
+    margin-bottom: 2em;
+}
+
+.schrift_klein {
+    font-size: 0.5em;
+}
