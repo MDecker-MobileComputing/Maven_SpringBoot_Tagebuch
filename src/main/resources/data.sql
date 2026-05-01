@@ -22,39 +22,39 @@ MERGE INTO nutzer (id, nutzername, passwort)
 
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
-    VALUES ( 1, '2024-01-01', 'Erster Eintrag von Alice' );
+    VALUES ( 1, '2026-01-01', 'Erster Eintrag von Alice' );
 
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
-    VALUES ( 1, '2024-01-02', 'Zweiter Eintrag von Alice: Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' );
+    VALUES ( 1, '2026-01-02', 'Zweiter Eintrag von Alice: Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' );
     
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
-    VALUES ( 1, '2024-02-01', 'Heute ist schon der erste Tag im Februar.' );
+    VALUES ( 1, '2026-02-01', 'Heute ist schon der erste Tag im Februar.' );
 
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
-    VALUES ( 1, '2024-04-01', 'Das erste Quartal im neuen Jahr ist rum.' );
+    VALUES ( 1, '2026-04-01', 'Das erste Quartal im neuen Jahr ist rum.' );
     
 
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
-    VALUES ( 2, '2024-01-01', 'Erster Eintrag von Bob' );
+    VALUES ( 2, '2026-01-01', 'Erster Eintrag von Bob' );
 
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
-    VALUES ( 2, '2024-03-15', 'Heute habe ich verschlafen' );
+    VALUES ( 2, '2026-03-15', 'Heute habe ich verschlafen' );
 
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
-    VALUES ( 2, '2024-03-16', 'Wie gestern habe ich auch heute verschlafen' );
+    VALUES ( 2, '2026-03-16', 'Wie gestern habe ich auch heute verschlafen' );
 
 MERGE INTO tagebucheintrag (nutzer_id, datum, eintrag)
     KEY(nutzer_id, datum)
-    VALUES ( 2, '2024-03-17', 'Zum dritten Mal in Folge habe ich heute verschlafen' );
+    VALUES ( 2, '2026-03-17', 'Zum dritten Mal in Folge habe ich heute verschlafen' );
 
 
 -- Vorlage INSERT-Statement für H2-Console:
 --
 --   INSERT INTO tagebucheintrag (nutzer_id, datum, eintrag)
---       VALUES (1, '2024-04-23', 'Heute ist es kalt aber sonnig.');
+--       VALUES (1, '2026-04-23', 'Heute ist es kalt aber sonnig.');
